@@ -3,5 +3,5 @@ Work-in-progress NLP pipeline for fine-tuning GPT-2 on selectively scraped Wikip
 
 ## How to run
 ```bash
-python run.py
+python run.py "BRIC.pdf"
 ```
