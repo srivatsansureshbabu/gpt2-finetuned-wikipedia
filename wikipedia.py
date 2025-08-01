@@ -109,5 +109,14 @@ def cleanDataFrame(df):
     df = removeExtraWhiteSpaces(df)
     return df
 
+def returnCleanedSkateText():
+    keyword = "skate"
+    randomPage = getSpecificPage(keyword)
+    randomPageDataFrame = convertPageintoDataFrame(randomPage)
+    randomPageDataFrame = cleanDataFrame(randomPageDataFrame)
+    page = convertDataFrametoPage(randomPageDataFrame)
 
+def convertDataFrametoPage(df):
+    text = "\n".join(df["text"].tolist())  # join with newlines
+    return text
 
