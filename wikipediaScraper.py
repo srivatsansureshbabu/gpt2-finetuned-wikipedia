@@ -142,23 +142,70 @@ def removeLatexExpressions(df):
     def cleanText(text):
         if not isinstance(text, str):
             return text
+        # Remove math environments
         text = re.sub(r"\$\$.*?\$\$", "", text, flags=re.DOTALL)
         text = re.sub(r"\$.*?\$", "", text, flags=re.DOTALL)
         text = re.sub(r"\\\(.*?\\\)", "", text, flags=re.DOTALL)
         text = re.sub(r"\\\[.*?\\\]", "", text, flags=re.DOTALL)
-        text = re.sub(r"\{.*?\}", "", text, flags=re.DOTALL)
-        # Remove any leftover { or } characters
-        text = text.replace("{", "").replace("}", "")
+        
+        # Remove common LaTeX commands but keep the argument
+        text = re.sub(r"\\[a-zA-Z]+", "", text)
+        
+        # Remove leftover braces carefully (only remove braces not around words)
+        text = re.sub(r"\{|\}", "", text)
+        
+        # Optional: Replace Greek letters or common commands manually
+        replacements = {
+            r"\\beta": "beta",
+            r"\\lambda": "lambda",
+            r"\\sum": "sum",
+            # add more if you want
+        }
+        for k, v in replacements.items():
+            text = re.sub(k, v, text)
+
+        # Clean extra whitespace
+        text = re.sub(r"\s+", " ", text).strip()
         return text
 
     df["text"] = df["text"].apply(cleanText)
     return df
+
+def removeMathFragments(df):
+    def cleanText(text):
+        if not isinstance(text, str):
+            return text
+        
+        # Remove inline and display math
+        text = re.sub(r"\$\$.*?\$\$", "", text, flags=re.DOTALL)
+        text = re.sub(r"\$.*?\$", "", text)
+        text = re.sub(r"\\\(.*?\\\)", "", text)
+        text = re.sub(r"\\\[.*?\\\]", "", text)
+        
+        # Remove common math operators and LaTeX commands
+        text = re.sub(r"\\[a-zA-Z]+", "", text)  # \commands like \log, \sum, \beta
+        text = re.sub(r"\^_\{\w+\}", "", text)   # superscripts or subscripts like ^_{j}
+        text = re.sub(r"[_\^][\{\[]?.*?[\}\]]?", "", text)  # _{...}, ^{...}, or _x, ^x
+        text = re.sub(r"\b[A-Za-z]\b", "", text)  # remove isolated single letters (like variables)
+        
+        # Remove curly braces leftover
+        text = text.replace("{", "").replace("}", "")
+        
+        # Remove multiple spaces
+        text = re.sub(r"\s+", " ", text)
+        
+        return text.strip()
+    
+    df["text"] = df["text"].apply(cleanText)
+    return df
+
 # does all operations
 def cleanDataFrame(df):
     df = removeEmptyData(df)
     df = removeHeaders(df)
     df = removeExtraWhiteSpaces(df)
     df = removeLatexExpressions(df)
+    df = removeMathFragments(df)
     return df
 
 def returnCleanedTextOfOneArticle(keyword):

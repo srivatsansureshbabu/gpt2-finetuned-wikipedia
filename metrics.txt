@@ -1,2 +1,7 @@
 Before PEFT: 
-"valhalla/t5-base-qg-hl"
+
+ML Model: 
+250 Question Answer Generations
+CPU: 9 minutes
+GPU: 1 minute
+9X faster 

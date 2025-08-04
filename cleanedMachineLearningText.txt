@@ -1,0 +1,937 @@
+In machine learning, supervised learning (SL) is type of machine learning paradigm where an algorithm learns to map input data to specific output based on example input-output pairs. This process involves training statistical model using labeled data, meaning each piece of input data is provided with the correct output. For instance, if you want model to identify cats in images, supervised learning would involve feeding it many images of cats (inputs) that are explicitly labeled "cat" (outputs).
+The goal of supervised learning is for the trained model to accurately predict the output for new, unseen data. This requires the algorithm to effectively generalize from the training examples, quality measured by its generalization error. Supervised learning is commonly used for tasks like classification (predicting category, .., spam or not spam) and regression (predicting continuous value, .., house prices).
+To solve given problem of supervised learning, the following steps must be performed:
+Determine the type of training samples. Before doing anything else, the user should decide what kind of data is to be used as training set. In the case of handwriting analysis, for example, this might be single handwritten character, an entire handwritten word, an entire sentence of handwriting, or full paragraph of handwriting.
+Gather training set. The training set needs to be representative of the real-world use of the function. Thus, set of input objects is gathered together with corresponding outputs, either from human experts or from measurements.
+Determine the input feature representation of the learned function. The accuracy of the learned function depends strongly on how the input object is represented. Typically, the input object is transformed into feature vector, which contains number of features that are descriptive of the object. The number of features should not be too large, because of the curse of dimensionality; but should contain enough information to accurately predict the output.
+Determine the structure of the learned function and corresponding learning algorithm. For example, one may choose to use support-vector machines or decision trees.
+Complete the design. Run the learning algorithm on the gathered training set. Some supervised learning algorithms require the user to determine certain control parameters. These parameters may be adjusted by optimizing performance on subset (called validation set) of the training set, or via cross-validation.
+Evaluate the accuracy of the learned function. After parameter adjustment and learning, the performance of the resulting function should be measured on test set that is separate from the training set.
+wide range of supervised learning algorithms are available, each with its strengths and weaknesses. There is no single learning algorithm that works best on all supervised learning problems (see the No free lunch theorem).
+There are four major issues to consider in supervised learning:
+first issue is the tradeoff between bias and variance. Imagine that we have available several different, but equally good, training data sets. learning algorithm is biased for particular input
+if, when trained on each of these data sets, it is systematically incorrect when predicting the correct output for
+. learning algorithm has high variance for particular input
+if it predicts different output values when trained on different training sets. The prediction error of learned classifier is related to the sum of the bias and the variance of the learning algorithm. Generally, there is tradeoff between bias and variance. learning algorithm with low bias must be "flexible" so that it can fit the data well. But if the learning algorithm is too flexible, it will fit each training data set differently, and hence have high variance. key aspect of many supervised learning methods is that they are able to adjust this tradeoff between bias and variance (either automatically or by providing bias/variance parameter that the user can adjust).
+The second issue is of the amount of training data available relative to the complexity of the "true" function (classifier or regression function). If the true function is simple, then an "inflexible" learning algorithm with high bias and low variance will be able to learn it from small amount of data. But if the true function is highly complex (.., because it involves complex interactions among many different input features and behaves differently in different parts of the input space), then the function will only be able to learn with large amount of training data paired with "flexible" learning algorithm with low bias and high variance.
+third issue is the dimensionality of the input space. If the input feature vectors have large dimensions, learning the function can be difficult even if the true function only depends on small number of those features. This is because the many "extra" dimensions can confuse the learning algorithm and cause it to have high variance. Hence, input data of large dimensions typically requires tuning the classifier to have low variance and high bias. In practice, if the engineer can manually remove irrelevant features from the input data, it will likely improve the accuracy of the learned function. In addition, there are many algorithms for feature selection that seek to identify the relevant features and discard the irrelevant ones. This is an instance of the more general strategy of dimensionality reduction, which seeks to map the input data into lower-dimensional space prior to running the supervised learning algorithm.
+fourth issue is the degree of noise in the desired output values (the supervisory target variables). If the desired output values are often incorrect (because of human error or sensor errors), then the learning algorithm should not attempt to find function that exactly matches the training examples. Attempting to fit the data too carefully leads to overfitting. You can overfit even when there are no measurement errors (stochastic noise) if the function you are trying to learn is too complex for your learning model. In such situation, the part of the target function that cannot be modeled "corrupts" your training data – this phenomenon has been called deterministic noise. When either type of noise is present, it is better to go with higher bias, lower variance estimator.
+In practice, there are several approaches to alleviate noise in the output values such as early stopping to prevent overfitting as well as detecting and removing the noisy training examples prior to training the supervised learning algorithm. There are several algorithms that identify noisy training examples and removing the suspected noisy training examples prior to training has decreased generalization error with statistical significance.
+Other factors to consider when choosing and applying learning algorithm include the following:
+Heterogeneity of the data. If the feature vectors include features of many different kinds (discrete, discrete ordered, counts, continuous values), some algorithms are easier to apply than others. Many algorithms, including support-vector machines, linear regression, logistic regression, neural networks, and nearest neighbor methods, require that the input features be numerical and scaled to similar ranges (.., to the [-1,1] interval). Methods that employ distance function, such as nearest neighbor methods and support-vector machines with Gaussian kernels, are particularly sensitive to this. An advantage of decision trees is that they easily handle heterogeneous data.
+Redundancy in the data. If the input features contain redundant information (.., highly correlated features), some learning algorithms (.., linear regression, logistic regression, and distance-based methods) will perform poorly because of numerical instabilities. These problems can often be solved by imposing some form of regularization.
+Presence of interactions and non-linearities. If each of the features makes an independent contribution to the output, then algorithms based on linear functions (.., linear regression, logistic regression, support-vector machines, naive Bayes) and distance functions (.., nearest neighbor methods, support-vector machines with Gaussian kernels) generally perform well. However, if there are complex interactions among features, then algorithms such as decision trees and neural networks work better, because they are specifically designed to discover these interactions. Linear methods can also be applied, but the engineer must manually specify the interactions when using them.
+When considering new application, the engineer can compare multiple learning algorithms and experimentally determine which one works best on the problem at hand (see cross-validation). Tuning the performance of learning algorithm can be very time-consuming. Given fixed resources, it is often better to spend more time collecting additional training data and more informative features than it is to spend extra time tuning the learning algorithms.
+The most widely used learning algorithms are:
+Linear discriminant analysis
+-nearest neighbors algorithm
+Neural networks (.., Multilayer perceptron)
+Given set of
+training examples of the form
+is the feature vector of the
+-th example and
+is its label (.., class), learning algorithm seeks function
+:
+is the input space and
+is the output space. The function
+is an element of some space of possible functions
+, usually called the hypothesis space. It is sometimes convenient to represent
+using scoring function
+:
+is defined as returning the
+value that gives the highest score:
+()= \;(,)
+denote the space of scoring functions.
+can be any space of functions, many learning algorithms are probabilistic models where
+takes the form of conditional probability model
+()= \;(|)
+takes the form of joint probability model
+. For example, naive Bayes and linear discriminant analysis are joint probability models, whereas logistic regression is conditional probability model.
+There are two basic approaches to choosing
+: empirical risk minimization and structural risk minimization. Empirical risk minimization seeks the function that best fits the training data. Structural risk minimization includes penalty function that controls the bias/variance tradeoff.
+In both cases, it is assumed that the training set consists of sample of independent and identically distributed pairs,
+. In order to measure how well function fits the training data, loss function
+: 0
+is defined. For training example
+, the loss of predicting the value
+
+(yi, )
+is defined as the expected loss of
+. This can be estimated from the training data as
+Remp()= 1N iL(yi,(xi))
+In empirical risk minimization, the supervised learning algorithm seeks the function
+. Hence, supervised learning algorithm can be constructed by applying an optimization algorithm to find
+is conditional probability distribution
+and the loss function is the negative log likelihood:
+(, )=- (|)
+, then empirical risk minimization is equivalent to maximum likelihood estimation.
+contains many candidate functions or the training set is not sufficiently large, empirical risk minimization leads to high variance and poor generalization. The learning algorithm is able to memorize the training examples without generalizing well (overfitting).
+Structural risk minimization seeks to prevent overfitting by incorporating regularization penalty into the optimization. The regularization penalty can be viewed as implementing form of Occam' razor that prefers simpler functions over more complex ones.
+wide variety of penalties have been employed that correspond to different definitions of complexity. For example, consider the case where the function
+is linear function of the form
+()= =1d jxj
+popular regularization penalty is
+j2
+, which is the squared Euclidean norm of the weights, also known as the
+norm. Other norms include the
+| |
+, and the
+"norm", which is the number of non-zero
+
+. The penalty will be denoted by
+The supervised learning optimization problem is to find the function
+()=Remp()+ ().
+
+controls the bias-variance tradeoff. When
+=0
+, this gives empirical risk minimization with low bias and high variance. When
+
+is large, the learning algorithm will have high bias and low variance. The value of
+
+can be chosen empirically via cross-validation.
+The complexity penalty has Bayesian interpretation as the negative log prior probability of
+- ()
+, in which case
+is the posterior probability of
+The training methods described above are discriminative training methods, because they seek to find function
+that discriminates well between the different output values (see discriminative model). For the special case where
+is joint probability distribution and the loss function is the negative log likelihood
+- (xi,yi),
+risk minimization algorithm is said to perform generative training, because
+can be regarded as generative model that explains how the data were generated. Generative training algorithms are often simpler and more computationally efficient than discriminative training algorithms. In some cases, the solution can be computed in closed form as in naive Bayes and linear discriminant analysis.
+There are several ways in which the standard supervised learning problem can be generalized:
+Semi-supervised learning or weak supervision: the desired output values are provided only for subset of the training data. The remaining data is unlabeled or imprecisely labeled.
+Active learning: Instead of assuming that all of the training examples are given at the start, active learning algorithms interactively collect new examples, typically by making queries to human user. Often, the queries are based on unlabeled data, which is scenario that combines semi-supervised learning with active learning.
+Structured prediction: When the desired output value is complex object, such as parse tree or labeled graph, then standard methods must be extended.
+Learning to rank: When the input is set of objects and the desired output is ranking of those objects, then again the standard methods must be extended.
+Artificial neural network
+Decision tree learning
+Inductive logic programming
+Gaussian process regression
+Group method of data handling
+Learning classifier systems
+Learning vector quantization
+Minimum message length (decision trees, decision graphs, etc.)
+Multilinear subspace learning
+Naive Bayes classifier
+Maximum entropy classifier
+Conditional random field
+Nearest neighbor algorithm
+Probably approximately correct learning (PAC) learning
+Ripple down rules, knowledge acquisition methodology
+Symbolic machine learning algorithms
+Subsymbolic machine learning algorithms
+Support vector machines
+Minimum complexity machines (MCM)
+Ensembles of classifiers
+Handling imbalanced datasets
+Statistical relational learning
+Proaftn, multicriteria classification algorithm
+Quantitative structure–activity relationship
+Learning to rank
+Object recognition in computer vision
+Optical character recognition
+Supervised learning is special case of downward causation in biological systems
+Landform classification using satellite imagery
+Spend classification in procurement processes
+Computational learning theory
+(Uncalibrated) class membership probabilities
+List of datasets for machine-learning research
+Machine Learning Open Source Software (MLOSS) Self-supervised learning (SSL) is paradigm in machine learning where model is trained on task using the data itself to generate supervisory signals, rather than relying on externally-provided labels. In the context of neural networks, self-supervised learning aims to leverage inherent structures or relationships within the input data to create meaningful training signals. SSL tasks are designed so that solving them requires capturing essential features or relationships in the data. The input data is typically augmented or transformed in way that creates pairs of related samples, where one sample serves as the input, and the other is used to formulate the supervisory signal. This augmentation can involve introducing noise, cropping, rotation, or other transformations. Self-supervised learning more closely imitates the way humans learn to classify objects.
+During SSL, the model learns in two steps. First, the task is solved based on an auxiliary or pretext classification task using pseudo-labels, which help to initialize the model parameters. Next, the actual task is performed with supervised or unsupervised learning.
+Self-supervised learning has produced promising results in recent years, and has found practical application in fields such as audio processing, and is being used by Facebook and others for speech recognition.
+Autoassociative self-supervised learning is specific category of self-supervised learning where neural network is trained to reproduce or reconstruct its own input data. In other words, the model is tasked with learning representation of the data that captures its essential features or structure, allowing it to regenerate the original input.
+The term "autoassociative" comes from the fact that the model is essentially associating the input data with itself. This is often achieved using autoencoders, which are type of neural network architecture used for representation learning. Autoencoders consist of an encoder network that maps the input data to lower-dimensional representation (latent space), and decoder network that reconstructs the input from this representation.
+The training process involves presenting the model with input data and requiring it to reconstruct the same data as closely as possible. The loss function used during training typically penalizes the difference between the original input and the reconstructed output (.. mean squared error). By minimizing this reconstruction error, the autoencoder learns meaningful representation of the data in its latent space.
+For binary classification task, training data can be divided into positive examples and negative examples. Positive examples are those that match the target. For example, if training classifier to identify birds, the positive training data would include images that contain birds. Negative examples would be images that do not. Contrastive self-supervised learning uses both positive and negative examples. The loss function in contrastive learning is used to minimize the distance between positive sample pairs, while maximizing the distance between negative sample pairs.
+An early example uses pair of 1-dimensional convolutional neural networks to process pair of images and maximize their agreement.
+Contrastive Language-Image Pre-training (CLIP) allows joint pretraining of text encoder and an image encoder, such that matching image-text pair have image encoding vector and text encoding vector that span small angle (having large cosine similarity).
+InfoNCE (Noise-Contrastive Estimation) is method to optimize two models jointly, based on Noise Contrastive Estimation (NCE). Given set
+=1, xN\
+random samples containing one positive sample from
+(xt+ ct)
+negative samples from the 'proposal' distribution
+, it minimizes the following loss function:
+=- [ fk(xt+,ct) xj Xfk(xj,ct)]
+Non-contrastive self-supervised learning (NCSSL) uses only positive examples. Counterintuitively, NCSSL converges on useful local minimum rather than reaching trivial solution, with zero loss. For the example of binary classification, it would trivially learn to classify each example as positive. Effective NCSSL requires an extra predictor on the online side that does not back-propagate on the target side.
+SSL belongs to supervised learning methods insofar as the goal is to generate classified output from the input. At the same time, however, it does not require the explicit use of labeled input-output pairs. Instead, correlations, metadata embedded in the data, or domain knowledge present in the input are implicitly and autonomously extracted from the data. These supervisory signals, extracted from the data, can then be used for training.
+SSL is similar to unsupervised learning in that it does not require labels in the sample data. Unlike unsupervised learning, however, learning is not done using inherent data structures.
+Semi-supervised learning combines supervised and unsupervised learning, requiring only small portion of the learning data be labeled.
+In transfer learning, model designed for one task is reused on different task.
+Training an autoencoder intrinsically constitutes self-supervised process, because the output pattern needs to become an optimal reconstruction of the input pattern itself. However, in current jargon, the term 'self-supervised' often refers to tasks based on pretext-task training setup. This involves the (human) design of such pretext task(), unlike
+the case of fully self-contained autoencoder training.
+In reinforcement learning, self-supervising learning from combination of losses can create abstract representations where only the most important information about the state are kept in compressed way.
+Self-supervised learning is particularly suitable for speech recognition. For example, Facebook developed wav2vec, self-supervised algorithm, to perform speech recognition using two deep convolutional neural networks that build on each other.
+Google' Bidirectional Encoder Representations from Transformers (BERT) model is used to better understand the context of search queries.
+OpenAI' GPT-3 is an autoregressive language model that can be used in language processing. It can be used to translate texts or answer questions, among other things.
+Bootstrap Your Own Latent (BYOL) is NCSSL that produced excellent results on ImageNet and on transfer and semi-supervised benchmarks.
+The Yarowsky algorithm is an example of self-supervised learning in natural language processing. From small number of labeled examples, it learns to predict which word sense of polysemous word is being used at given point in text.
+DirectPred is NCSSL that directly sets the predictor weights instead of learning it via typical gradient descent.
+Self-GenomeNet is an example of self-supervised learning in genomics.
+Self-supervised learning continues to gain prominence as new approach across diverse fields. Its ability to leverage unlabeled data effectively opens new possibilities for advancement in machine learning, especially in data-driven application domains.
+Balestriero, Randall; Ibrahim, Mark; Sobal, Vlad; Morcos, Ari; Shekhar, Shashank; Goldstein, Tom; Bordes, Florian; Bardes, Adrien; Mialon, Gregoire; Tian, Yuandong; Schwarzschild, Avi; Wilson, Andrew Gordon; Geiping, Jonas; Garrido, Quentin; Fernandez, Pierre (24 April 2023). " Cookbook of Self-Supervised Learning". arXiv:2304.12210 [cs.LG].
+Doersch, Carl; Zisserman, Andrew (October 2017). "Multi-task Self-Supervised Visual Learning". 2017 IEEE International Conference on Computer Vision (ICCV). pp. 2070–2079. arXiv:1708.07860. doi:10.1109/ICCV.2017.226. ISBN 978-1-5386-1032-9. S2CID 473729.
+Doersch, Carl; Gupta, Abhinav; Efros, Alexei . (December 2015). "Unsupervised Visual Representation Learning by Context Prediction". 2015 IEEE International Conference on Computer Vision (ICCV). pp. 1422–1430. arXiv:1505.05192. doi:10.1109/ICCV.2015.167. ISBN 978-1-4673-8391-2. S2CID 9062671.
+Zheng, Xin; Wang, Yong; Wang, Guoyou; Liu, Jianguo (1 April 2018). "Fast and robust segmentation of white blood cell images by self-supervised learning". Micron. 107: 55–71. doi:10.1016/.micron.2018.01.010. ISSN 0968-4328. PMID 29425969. S2CID 3796689.
+Yarowsky, David (1995). "Unsupervised Word Sense Disambiguation Rivaling Supervised Methods". Proceedings of the 33rd Annual Meeting of the Association for Computational Linguistics. Cambridge, MA: Association for Computational Linguistics: 189–196. doi:10.3115/981658.981684. Retrieved 1 November 2022. Unsupervised learning is framework in machine learning where, in contrast to supervised learning, algorithms learn patterns exclusively from unlabeled data. Other frameworks in the spectrum of supervisions include weak- or semi-supervision, where small portion of the data is tagged, and self-supervision. Some researchers consider self-supervised learning form of unsupervised learning.
+Conceptually, unsupervised learning divides into the aspects of data, training, algorithm, and downstream applications. Typically, the dataset is harvested cheaply "in the wild", such as massive text corpus obtained by web crawling, with only minor filtering (such as Common Crawl). This compares favorably to supervised learning, where the dataset (such as the ImageNet1000) is typically constructed manually, which is much more expensive.
+There were algorithms designed specifically for unsupervised learning, such as clustering algorithms like -means, dimensionality reduction techniques like principal component analysis (PCA), Boltzmann machine learning, and autoencoders. After the rise of deep learning, most large-scale unsupervised learning have been done by training general-purpose neural network architectures by gradient descent, adapted to performing unsupervised learning by designing an appropriate training procedure.
+Sometimes trained model can be used as-is, but more often they are modified for downstream applications. For example, the generative pretraining method trains model to generate textual dataset, before finetuning it for other applications, such as text classification. As another example, autoencoders are trained to good features, which can then be used as module for other models, such as in latent diffusion model.
+Tasks are often categorized as discriminative (recognition) or generative (imagination). Often but not always, discriminative tasks use supervised methods and generative tasks use unsupervised (see Venn diagram); however, the separation is very hazy. For example, object recognition favors supervised learning but unsupervised learning can also cluster objects into groups. Furthermore, as progress marches onward, some tasks employ both methods, and some tasks swing from one to another. For example, image recognition started off as heavily supervised, but became hybrid by employing unsupervised pre-training, and then moved towards supervision again with the advent of dropout, ReLU, and adaptive learning rates.
+typical generative task is as follows. At each step, datapoint is sampled from the dataset, and part of the data is removed, and the model must infer the removed part. This is particularly clear for the denoising autoencoders and BERT.
+During the learning phase, an unsupervised network tries to mimic the data it' given and uses the error in its mimicked output to correct itself (.. correct its weights and biases). Sometimes the error is expressed as low probability that the erroneous output occurs, or it might be expressed as an unstable high energy state in the network.
+In contrast to supervised methods' dominant use of backpropagation, unsupervised learning also employs other methods including: Hopfield learning rule, Boltzmann learning rule, Contrastive Divergence, Wake Sleep, Variational Inference, Maximum Likelihood, Maximum Posteriori, Gibbs Sampling, and backpropagating reconstruction errors or hidden state reparameterizations. See the table below for more details.
+An energy function is macroscopic measure of network' activation state. In Boltzmann machines, it plays the role of the Cost function. This analogy with physics is inspired by Ludwig Boltzmann' analysis of gas' macroscopic energy from the microscopic probabilities of particle motion
+-/kT
+, where is the Boltzmann constant and is temperature. In the RBM network the relation is
+vary over every possible activation pattern and
+= All Patternse-(pattern)
+. To be more precise,
+is an activation pattern of all neurons (visible and hidden). Hence, some early neural networks bear the name Boltzmann Machine. Paul Smolensky calls
+the Harmony. network seeks low energy which is high Harmony.
+This table shows connection diagrams of various unsupervised networks, the details of which will be given in the section Comparison of Networks. Circles are neurons and edges between them are connection weights. As network design changes, features are added on to enable new capabilities or removed to make learning faster. For instance, neurons change between deterministic (Hopfield) and stochastic (Boltzmann) to allow robust output, weights are removed within layer (RBM) to hasten learning, or connections are allowed to become asymmetric (Helmholtz).
+Of the networks bearing people' names, only Hopfield worked directly with neural networks. Boltzmann and Helmholtz came before artificial neural networks, but their work in physics and physiology inspired the analytical methods that were used.
+Here, we highlight some characteristics of select networks. The details of each are given in the comparison table below.
+Ferromagnetism inspired Hopfield networks. neuron correspond to an iron domain with binary magnetic moments Up and Down, and neural connections correspond to the domain' influence on each other. Symmetric connections enable global energy formulation. During inference the network updates each state using the standard activation step function. Symmetric weights and the right energy functions guarantees convergence to stable activation pattern. Asymmetric weights are difficult to analyze. Hopfield nets are used as Content Addressable Memories (CAM).
+These are stochastic Hopfield nets. Their state value is sampled from this pdf as follows: suppose binary neuron fires with the Bernoulli probability (1) = 1/3 and rests with (0) = 2/3. One samples from it by taking uniformly distributed random number , and plugging it into the inverted cumulative distribution function, which in this case is the step function thresholded at 2/3. The inverse function = 0 if <= 2/3, 1 if > 2/3 .
+Introduced by Radford Neal in 1992, this network applies ideas from probabilistic graphical models to neural networks. key difference is that nodes in graphical models have pre-assigned meanings, whereas Belief Net neurons' features are determined after training. The network is sparsely connected directed acyclic graph composed of binary stochastic neurons. The learning rule comes from Maximum Likelihood on (): Δwij
+
+sj * (si - pi), where pi = 1 / ( 1 + eweighted inputs into neuron ). sj' are activations from an unbiased sample of the posterior distribution and this is problematic due to the Explaining Away problem raised by Judea Perl. Variational Bayesian methods uses surrogate posterior and blatantly disregard this complexity.
+Introduced by Hinton, this network is hybrid of RBM and Sigmoid Belief Network. The top 2 layers is an RBM and the second layer downwards form sigmoid belief network. One trains it by the stacked RBM method and then throw away the recognition weights below the top RBM. As of 2009, 3-4 layers seems to be the optimal depth.
+These are early inspirations for the Variational Auto Encoders. Its 2 networks combined into one—forward weights operates recognition and backward weights implements imagination. It is perhaps the first network to do both. Helmholtz did not work in machine learning but he inspired the view of "statistical inference engine whose function is to infer probable causes of sensory input". the stochastic binary neuron outputs probability that its state is 0 or 1. The data input is normally not considered layer, but in the Helmholtz machine generation mode, the data layer receives input from the middle layer and has separate weights for this purpose, so it is considered layer. Hence this network has 3 layers.
+These are inspired by Helmholtz machines and combines probability network with neural networks. An Autoencoder is 3-layer CAM network, where the middle layer is supposed to be some internal representation of input patterns. The encoder neural network is probability distribution qφ( given ) and the decoder network is pθ( given ). The weights are named phi & theta rather than and as in Helmholtz— cosmetic difference. These 2 networks here can be fully connected, or use another NN scheme.
+The classical example of unsupervised learning in the study of neural networks is Donald Hebb' principle, that is, neurons that fire together wire together. In Hebbian learning, the connection is reinforced irrespective of an error, but is exclusively function of the coincidence between action potentials between the two neurons. similar version that modifies synaptic weights takes into account the time between the action potentials (spike-timing-dependent plasticity or STDP). Hebbian Learning has been hypothesized to underlie range of cognitive functions, such as pattern recognition and experiential learning.
+Among neural network models, the self-organizing map (SOM) and adaptive resonance theory (ART) are commonly used in unsupervised learning algorithms. The SOM is topographic organization in which nearby locations in the map represent inputs with similar properties. The ART model allows the number of clusters to vary with problem size and lets the user control the degree of similarity between members of the same clusters by means of user-defined constant called the vigilance parameter. ART networks are used for many pattern recognition tasks, such as automatic target recognition and seismic signal processing.
+Two of the main methods used in unsupervised learning are principal component and cluster analysis. Cluster analysis is used in unsupervised learning to group, or segment, datasets with shared attributes in order to extrapolate algorithmic relationships. Cluster analysis is branch of machine learning that groups the data that has not been labelled, classified or categorized. Instead of responding to feedback, cluster analysis identifies commonalities in the data and reacts based on the presence or absence of such commonalities in each new piece of data. This approach helps detect anomalous data points that do not fit into either group.
+central application of unsupervised learning is in the field of density estimation in statistics, though unsupervised learning encompasses many other domains involving summarizing and explaining data features. It can be contrasted with supervised learning by saying that whereas supervised learning intends to infer conditional probability distribution conditioned on the label of input data; unsupervised learning intends to infer an priori probability distribution .
+Some of the most common algorithms used in unsupervised learning include: (1) Clustering, (2) Anomaly detection, (3) Approaches for learning latent variable models. Each approach uses several methods as follows:
+Clustering methods include: hierarchical clustering, -means, mixture models, model-based clustering, DBSCAN, and OPTICS algorithm
+Anomaly detection methods include: Local Outlier Factor, and Isolation Forest
+Approaches for learning latent variable models such as Expectation–maximization algorithm (EM), Method of moments, and Blind signal separation techniques (Principal component analysis, Independent component analysis, Non-negative matrix factorization, Singular value decomposition)
+One of the statistical approaches for unsupervised learning is the method of moments. In the method of moments, the unknown parameters (of interest) in the model are related to the moments of one or more random variables, and thus, these unknown parameters can be estimated given the moments. The moments are usually estimated from samples empirically. The basic moments are first and second order moments. For random vector, the first order moment is the mean vector, and the second order moment is the covariance matrix (when the mean is zero). Higher order moments are usually represented using tensors which are the generalization of matrices to higher orders as multi-dimensional arrays.
+In particular, the method of moments is shown to be effective in learning the parameters of latent variable models. Latent variable models are statistical models where in addition to the observed variables, set of latent variables also exists which is not observed. highly practical example of latent variable models in machine learning is the topic modeling which is statistical model for generating the words (observed variables) in the document based on the topic (latent variable) of the document. In the topic modeling, the words in the document are generated according to different statistical parameters when the topic of the document is changed. It is shown that method of moments (tensor decomposition techniques) consistently recover the parameters of large class of latent variable models under some assumptions.
+The Expectation–maximization algorithm (EM) is also one of the most practical methods for learning latent variable models. However, it can get stuck in local optima, and it is not guaranteed that the algorithm will converge to the true unknown parameters of the model. In contrast, for the method of moments, the global convergence is guaranteed under some conditions.
+Automated machine learning
+Generative topographic map
+Meta-learning (computer science)
+Radial basis function network Reinforcement learning (RL) is an interdisciplinary area of machine learning and optimal control concerned with how an intelligent agent should take actions in dynamic environment in order to maximize reward signal. Reinforcement learning is one of the three basic machine learning paradigms, alongside supervised learning and unsupervised learning.
+Reinforcement learning differs from supervised learning in not needing labelled input-output pairs to be presented, and in not needing sub-optimal actions to be explicitly corrected. Instead, the focus is on finding balance between exploration (of uncharted territory) and exploitation (of current knowledge) with the goal of maximizing the cumulative reward (the feedback of which might be incomplete or delayed). The search for this balance is known as the exploration–exploitation dilemma.
+The environment is typically stated in the form of Markov decision process (MDP), as many reinforcement learning algorithms use dynamic programming techniques. The main difference between classical dynamic programming methods and reinforcement learning algorithms is that the latter do not assume knowledge of an exact mathematical model of the Markov decision process, and they target large MDPs where exact methods become infeasible.
+Due to its generality, reinforcement learning is studied in many disciplines, such as game theory, control theory, operations research, information theory, simulation-based optimization, multi-agent systems, swarm intelligence, and statistics. In the operations research and control literature, RL is called approximate dynamic programming, or neuro-dynamic programming. The problems of interest in RL have also been studied in the theory of optimal control, which is concerned mostly with the existence and characterization of optimal solutions, and algorithms for their exact computation, and less with learning or approximation (particularly in the absence of mathematical model of the environment).
+Basic reinforcement learning is modeled as Markov decision process:
+set of environment and agent states (the state space),
+
+set of actions (the action space),
+
+, of the agent;
+Pa(,')=(St+1=' St=,At=)
+, the transition probability (at time
+) from state
+, the immediate reward after transition from
+The purpose of reinforcement learning is for the agent to learn an optimal (or near-optimal) policy that maximizes the reward function or other user-provided reinforcement signal that accumulates from immediate rewards. This is similar to processes that appear to occur in animal psychology. For example, biological brains are hardwired to interpret signals such as pain and hunger as negative reinforcements, and interpret pleasure and food intake as positive reinforcements. In some circumstances, animals learn to adopt behaviors that optimize these rewards. This suggests that animals are capable of reinforcement learning.
+basic reinforcement learning agent interacts with its environment in discrete time steps. At each time step , the agent receives the current state
+. It then chooses an action
+from the set of available actions, which is subsequently sent to the environment. The environment moves to new state
+and the reward
+associated with the transition
+is determined. The goal of reinforcement learning agent is to learn policy:
+aligned& : [0,1]\\& (,)=(At= St=)aligned
+that maximizes the expected cumulative reward.
+Formulating the problem as Markov decision process assumes the agent directly observes the current environmental state; in this case, the problem is said to have full observability. If the agent only has access to subset of states, or if the observed states are corrupted by noise, the agent is said to have partial observability, and formally the problem must be formulated as partially observable Markov decision process. In both cases, the set of actions available to the agent can be restricted. For example, the state of an account balance could be restricted to be positive; if the current value of the state is 3 and the state transition attempts to reduce the value by 4, the transition will not be allowed.
+When the agent' performance is compared to that of an agent that acts optimally, the difference in performance yields the notion of regret. In order to act near optimally, the agent must reason about long-term consequences of its actions (.., maximize future rewards), although the immediate reward associated with this might be negative.
+Thus, reinforcement learning is particularly well-suited to problems that include long-term versus short-term reward trade-off. It has been applied successfully to various problems, including energy storage, robot control, photovoltaic generators, backgammon, checkers, Go (AlphaGo), and autonomous driving systems.
+Two elements make reinforcement learning powerful: the use of samples to optimize performance, and the use of function approximation to deal with large environments. Thanks to these two key components, RL can be used in large environments in the following situations:
+model of the environment is known, but an analytic solution is not available;
+Only simulation model of the environment is given (the subject of simulation-based optimization);
+The only way to collect information about the environment is to interact with it.
+The first two of these problems could be considered planning problems (since some form of model is available), while the last one could be considered to be genuine learning problem. However, reinforcement learning converts both planning problems to machine learning problems.
+The exploration vs. exploitation trade-off has been most thoroughly studied through the multi-armed bandit problem and for finite state space Markov decision processes in Burnetas and Katehakis (1997).
+Reinforcement learning requires clever exploration mechanisms; randomly selecting actions, without reference to an estimated probability distribution, shows poor performance. The case of (small) finite Markov decision processes is relatively well understood. However, due to the lack of algorithms that scale well with the number of states (or scale to problems with infinite state spaces), simple exploration methods are the most practical.
+One such method is
+
+0< <1
+is parameter controlling the amount of exploration vs. exploitation. With probability
+1-
+, exploitation is chosen, and the agent chooses the action that it believes has the best long-term effect (ties between actions are broken uniformly at random). Alternatively, with probability
+
+, exploration is chosen, and the action is chosen uniformly at random.
+
+is usually fixed parameter but can be adjusted either according to schedule (making the agent explore progressively less), or adaptively based on heuristics.
+Even if the issue of exploration is disregarded and even if the state was observable (assumed hereafter), the problem remains to use past experience to find out which actions lead to higher cumulative rewards.
+The agent' action selection is modeled as map called policy:
+aligned& : [0,1]\\& (,)=(At= St=)aligned
+The policy map gives the probability of taking action
+when in state
+. There are also deterministic policies
+
+()
+denotes the action that should be played at state
+The state-value function
+()
+is defined as, expected discounted return starting with state
+, and successively following policy
+
+. Hence, roughly speaking, the value function estimates "how good" it is to be in given state.
+()= [ S0=]= [ =0 tRt+1 S0=],
+where the random variable
+denotes the discounted return, and is defined as the sum of future discounted rewards:
+= =0 tRt+1=R1+ R2+ 2R3+ ,
+is the reward for transitioning from state
+0 <1
+is the discount rate.
+
+is less than 1, so rewards in the distant future are weighted less than rewards in the immediate future.
+The algorithm must find policy with maximum expected discounted return. From the theory of Markov decision processes it is known that, without loss of generality, the search can be restricted to the set of so-called stationary policies. policy is stationary if the action-distribution returned by it depends only on the last state visited (from the observation agent' history). The search can be further restricted to deterministic stationary policies. deterministic stationary policy deterministically selects actions based on the current state. Since any such policy can be identified with mapping from the set of states to the set of actions, these policies can be identified with such mappings with no loss of generality.
+The brute force approach entails two steps:
+For each possible policy, sample returns while following it
+Choose the policy with the largest expected discounted return
+One problem with this is that the number of policies can be large, or even infinite. Another is that the variance of the returns may be large, which requires many samples to accurately estimate the discounted return of each policy.
+These problems can be ameliorated if we assume some structure and allow samples generated from one policy to influence the estimates made for others. The two main approaches for achieving this are value function estimation and direct policy search.
+Value function approaches attempt to find policy that maximizes the discounted return by maintaining set of estimates of expected discounted returns
+[]
+for some policy (usually either the "current" [on-policy] or the optimal [off-policy] one).
+These methods rely on the theory of Markov decision processes, where optimality is defined in sense stronger than the one above: policy is optimal if it achieves the best-expected discounted return from any initial state (.., initial distributions play no role in this definition). Again, an optimal policy can always be found among stationary policies.
+To define optimality in formal manner, define the state-value of policy
+
+()= [ , ],
+stands for the discounted return associated with following
+
+from the initial state
+as the maximum possible state-value of
+()
+
+is allowed to change,
+*()= ().
+policy that achieves these optimal state-values in each state is called optimal. Clearly, policy that is optimal in this sense is also optimal in the sense that it maximizes the expected discounted return, since
+*()= [ , ]
+is state randomly sampled from the distribution
+
+of initial states (so
+()=(S0=)
+Although state-values suffice to define optimality, it is useful to define action-values. Given state
+, an action
+and policy
+
+, the action-value of the pair
+
+is defined by
+(,)= [ ,, ],
+now stands for the random discounted return associated with first taking action
+
+The theory of Markov decision processes states that if
+*
+is an optimal policy, we act optimally (take the optimal action) by choosing the action from
+*(, )
+with the highest action-value at each state,
+. The action-value function of such an optimal policy (
+*
+) is called the optimal action-value function and is commonly denoted by
+. In summary, the knowledge of the optimal action-value function alone suffices to know how to act optimally.
+Assuming full knowledge of the Markov decision process, the two basic approaches to compute the optimal action-value function are value iteration and policy iteration. Both algorithms compute sequence of functions
+=0,1,2,
+) that converge to
+. Computing these functions involves computing expectations over the whole state-space, which is impractical for all but the smallest (finite) Markov decision processes. In reinforcement learning methods, expectations are approximated by averaging over samples and using function approximation techniques to cope with the need to represent value functions over large state-action spaces.
+Monte Carlo methods are used to solve reinforcement learning problems by averaging sample returns. Unlike methods that require full knowledge of the environment' dynamics, Monte Carlo methods rely solely on actual or simulated experience—sequences of states, actions, and rewards obtained from interaction with an environment. This makes them applicable in situations where the complete dynamics are unknown. Learning from actual experience does not require prior knowledge of the environment and can still lead to optimal behavior. When using simulated experience, only model capable of generating sample transitions is required, rather than full specification of transition probabilities, which is necessary for dynamic programming methods.
+Monte Carlo methods apply to episodic tasks, where experience is divided into episodes that eventually terminate. Policy and value function updates occur only after the completion of an episode, making these methods incremental on an episode-by-episode basis, though not on step-by-step (online) basis. The term "Monte Carlo" generally refers to any method involving random sampling; however, in this context, it specifically refers to methods that compute averages from complete returns, rather than partial returns.
+These methods function similarly to the bandit algorithms, in which returns are averaged for each state-action pair. The key difference is that actions taken in one state affect the returns of subsequent states within the same episode, making the problem non-stationary. To address this non-stationarity, Monte Carlo methods use the framework of general policy iteration (GPI). While dynamic programming computes value functions using full knowledge of the Markov decision process (MDP), Monte Carlo methods learn these functions through sample returns. The value functions and policies interact similarly to dynamic programming to achieve optimality, first addressing the prediction problem and then extending to policy improvement and control, all based on sampled experience.
+The first problem is corrected by allowing the procedure to change the policy (at some or all states) before the values settle. This too may be problematic as it might prevent convergence. Most current algorithms do this, giving rise to the class of generalized policy iteration algorithms. Many actor-critic methods belong to this category.
+The second issue can be corrected by allowing trajectories to contribute to any state-action pair in them. This may also help to some extent with the third problem, although better solution when returns have high variance is Sutton' temporal difference (TD) methods that are based on the recursive Bellman equation. The computation in TD methods can be incremental (when after each transition the memory is changed and the transition is thrown away), or batch (when the transitions are batched and the estimates are computed once based on the batch). Batch methods, such as the least-squares temporal difference method, may use the information in the samples better, while incremental methods are the only choice when batch methods are infeasible due to their high computational or memory complexity. Some methods try to combine the two approaches. Methods based on temporal differences also overcome the fourth issue.
+Another problem specific to TD comes from their reliance on the recursive Bellman equation. Most TD methods have so-called
+
+(0 1)
+that can continuously interpolate between Monte Carlo methods that do not rely on the Bellman equations and the basic TD methods that rely entirely on the Bellman equations. This can be effective in palliating this issue.
+In order to address the fifth issue, function approximation methods are used. Linear function approximation starts with mapping
+
+that assigns finite-dimensional vector to each state-action pair. Then, the action values of state-action pair
+are obtained by linearly combining the components of
+(,)
+with some weights
+
+(,)= =1d (,).
+The algorithms then adjust the weights, instead of adjusting the values associated with the individual state-action pairs. Methods based on ideas from nonparametric statistics (which can be seen to construct their own features) have been explored.
+Value iteration can also be used as starting point, giving rise to the -learning algorithm and its many variants. Including Deep -learning methods when neural network is used to represent , with various applications in stochastic search problems.
+The problem with using action-values is that they may need highly precise estimates of the competing action values that can be hard to obtain when the returns are noisy, though this problem is mitigated to some extent by temporal difference methods. Using the so-called compatible function approximation method compromises generality and efficiency.
+An alternative method is to search directly in (some subset of) the policy space, in which case the problem becomes case of stochastic optimization. The two approaches available are gradient-based and gradient-free methods.
+Gradient-based methods (policy gradient methods) start with mapping from finite-dimensional (parameter) space to the space of policies: given the parameter vector
+
+
+denote the policy associated to
+
+. Defining the performance function by
+( )=
+under mild conditions this function will be differentiable as function of the parameter vector
+
+. If the gradient of
+
+was known, one could use gradient ascent. Since an analytic expression for the gradient is not available, only noisy estimate is available. Such an estimate can be constructed in many ways, giving rise to algorithms such as Williams' REINFORCE method (which is known as the likelihood ratio method in the simulation-based optimization literature).
+large class of methods avoids relying on gradient information. These include simulated annealing, cross-entropy search or methods of evolutionary computation. Many gradient-free methods can achieve (in theory and in the limit) global optimum.
+Policy search methods may converge slowly given noisy data. For example, this happens in episodic problems when the trajectories are long and the variance of the returns is large. Value-function based methods that rely on temporal differences might help in this case. In recent years, actor–critic methods have been proposed and performed well on various problems.
+Policy search methods have been used in the robotics context. Many policy search methods may get stuck in local optima (as they are based on local search).
+Finally, all of the above methods can be combined with algorithms that first learn model of the Markov decision process, the probability of each next state given an action taken from an existing state. For instance, the Dyna algorithm learns model from experience, and uses that to provide more modelled transitions for value function, in addition to the real transitions. Such methods can sometimes be extended to use of non-parametric models, such as when the transitions are simply stored and "replayed" to the learning algorithm.
+Model-based methods can be more computationally intensive than model-free approaches, and their utility can be limited by the extent to which the Markov decision process can be learnt.
+There are other ways to use models than to update value function. For instance, in model predictive control the model is used to update the behavior directly.
+Both the asymptotic and finite-sample behaviors of most algorithms are well understood. Algorithms with provably good online performance (addressing the exploration issue) are known.
+Efficient exploration of Markov decision processes is given in Burnetas and Katehakis (1997). Finite-time performance bounds have also appeared for many algorithms, but these bounds are expected to be rather loose and thus more work is needed to better understand the relative advantages and limitations.
+For incremental algorithms, asymptotic convergence issues have been settled. Temporal-difference-based algorithms converge under wider set of conditions than was previously possible (for example, when used with arbitrary, smooth function approximation).
+Research topics include:
+adaptive methods that work with fewer (or no) parameters under large number of conditions
+bug detection in software projects
+combinations with logic-based frameworks
+exploration in large Markov decision processes
+entity-based reinforcement learning
+interaction between implicit and explicit learning in skill acquisition
+intrinsic motivation which differentiates information-seeking, curiosity-type behaviours from task-dependent goal-directed behaviours large-scale empirical evaluations
+large (or continuous) action spaces
+modular and hierarchical reinforcement learning
+multiagent/distributed reinforcement learning is topic of interest. Applications are expanding.
+optimization of computing resources
+partial information (.., using predictive state representation)
+reward function based on maximising novel information
+sample-based planning (.., based on Monte Carlo tree search).
+TD learning modeling dopamine-based learning in the brain. Dopaminergic projections from the substantia nigra to the basal ganglia function are the prediction error.
+value-function and policy search methods
+The following table lists the key algorithms for learning policy depending on several criteria:
+The algorithm can be on-policy (it performs policy updates using trajectories sampled via the current policy) or off-policy.
+The action space may be discrete (.. the action space could be "going up", "going left", "going right", "going down", "stay") or continuous (.. moving the arm with given angle).
+The state space may be discrete (.. the agent could be in cell in grid) or continuous (.. the agent could be located at given position in the plane).
+Associative reinforcement learning tasks combine facets of stochastic learning automata tasks and supervised learning pattern classification tasks. In associative reinforcement learning tasks, the learning system interacts in closed loop with its environment.
+This approach extends reinforcement learning by using deep neural network and without explicitly designing the state space. The work on learning ATARI games by Google DeepMind increased attention to deep reinforcement learning or end-to-end reinforcement learning.
+Adversarial deep reinforcement learning is an active area of research in reinforcement learning focusing on vulnerabilities of learned policies. In this research area some studies initially showed that reinforcement learning policies are susceptible to imperceptible adversarial manipulations. While some methods have been proposed to overcome these susceptibilities, in the most recent studies it has been shown that these proposed solutions are far from providing an accurate representation of current vulnerabilities of deep reinforcement learning policies.
+By introducing fuzzy inference in reinforcement learning, approximating the state-action value function with fuzzy rules in continuous space becomes possible. The IF - THEN form of fuzzy rules make this approach suitable for expressing the results in form close to natural language. Extending FRL with Fuzzy Rule Interpolation allows the use of reduced size sparse fuzzy rule-bases to emphasize cardinal rules (most important state-action values).
+In inverse reinforcement learning (IRL), no reward function is given. Instead, the reward function is inferred given an observed behavior from an expert. The idea is to mimic observed behavior, which is often optimal or close to optimal. One popular IRL paradigm is named maximum entropy inverse reinforcement learning (MaxEnt IRL). MaxEnt IRL estimates the parameters of linear model of the reward function by maximizing the entropy of the probability distribution of observed trajectories subject to constraints related to matching expected feature counts. Recently it has been shown that MaxEnt IRL is particular case of more general framework named random utility inverse reinforcement learning (RU-IRL). RU-IRL is based on random utility theory and Markov decision processes. While prior IRL approaches assume that the apparent random behavior of an observed agent is due to it following random policy, RU-IRL assumes that the observed agent follows deterministic policy but randomness in observed behavior is due to the fact that an observer only has partial access to the features the observed agent uses in decision making. The utility function is modeled as random variable to account for the ignorance of the observer regarding the features the observed agent actually considers in its utility function.
+Multi-objective reinforcement learning (MORL) is form of reinforcement learning concerned with conflicting alternatives. It is distinct from multi-objective optimization in that it is concerned with agents acting in environments.
+Safe reinforcement learning (SRL) can be defined as the process of learning policies that maximize the expectation of the return in problems in which it is important to ensure reasonable system performance and/or respect safety constraints during the learning and/or deployment processes. An alternative approach is risk-averse reinforcement learning, where instead of the expected return, risk-measure of the return is optimized, such as the conditional value at risk (CVaR). In addition to mitigating risk, the CVaR objective increases robustness to model uncertainties. However, CVaR optimization in risk-averse RL requires special care, to prevent gradient bias and blindness to success.
+Self-reinforcement learning (or self-learning), is learning paradigm which does not use the concept of immediate reward
+after transition from
+. It does not use an external reinforcement, it only uses the agent internal self-reinforcement. The internal self-reinforcement is provided by mechanism of feelings and emotions. In the learning process emotions are backpropagated by mechanism of secondary reinforcement. The learning equation does not include the immediate reward, it only includes the state evaluation.
+The self-reinforcement algorithm updates memory matrix
+such that in each iteration executes the following machine learning routine:
+Receive consequence situation
+Compute state evaluation
+of how good is to be in the consequence situation
+Update crossbar memory
+Initial conditions of the memory are received as input from the genetic environment. It is system with only one input (situation), and only one output (action, or behavior).
+Self-reinforcement (self-learning) was introduced in 1982 along with neural network capable of self-reinforcement learning, named Crossbar Adaptive Array (CAA). The CAA computes, in crossbar fashion, both decisions about actions and emotions (feelings) about consequence states. The system is driven by the interaction between cognition and emotion.
+In recent years, Reinforcement learning has become significant concept in Natural Language Processing (NLP), where tasks are often sequential decision-making rather than static classification. Reinforcement learning is where an agent take actions in an environment to maximize the accumulation of rewards. This framework is best fit for many NLP tasks, including dialogue generation, text summarization, and machine translation, where the quality of the output depends on optimizing long-term or human-centered goals rather than the prediction of single correct label.
+Early application of RL in NLP emerged in dialogue systems, where conversation was determined as series of actions optimized for fluency and coherence. These early attempts, including policy gradient and sequence-level training techniques, laid foundation for the broader application of reinforcement learning to other areas of NLP.
+major breakthrough happened with the introduction of Reinforcement Learning from Human Feedback (RLHF), method in which human feedbacks are used to train reward model that guides the RL agent. Unlike traditional rule-based or supervised systems, RLHF allows models to align their behavior with human judgments on complex and subjective tasks. This technique was initially used in the development of InstructGPT, an effective language model trained to follow human instructions and later in ChatGPT which incorporates RLHF for improving output responses and ensuring safety.
+More recently, researchers have explored the use of offline RL in NLP to improve dialogue systems without the need of live human interaction. These methods optimize for user engagement, coherence, and diversity based on past conversation logs and pre-trained reward models.
+Efficient comparison of RL algorithms is essential for research, deployment and monitoring of RL systems. To compare different algorithms on given environment, an agent can be trained for each algorithm. Since the performance is sensitive to implementation details, all algorithms should be implemented as closely as possible to each other. After the training is finished, the agents can be run on sample of test episodes, and their scores (returns) can be compared. Since episodes are typically assumed to be .., standard statistical tools can be used for hypothesis testing, such as -test and permutation test. This requires to accumulate all the rewards within an episode into single number—the episodic return. However, this causes loss of information, as different time-steps are averaged together, possibly with different levels of noise. Whenever the noise level varies across the episode, the statistical power can be improved significantly, by weighting the rewards according to their estimated noise.
+Despite significant advancements, reinforcement learning (RL) continues to face several challenges and limitations that hinder its widespread application in real-world scenarios.
+RL algorithms often require large number of interactions with the environment to learn effective policies, leading to high computational costs and time-intensive to train the agent. For instance, OpenAI' Dota-playing bot utilized thousands of years of simulated gameplay to achieve human-level performance. Techniques like experience replay and curriculum learning have been proposed to deprive sample inefficiency, but these techniques add more complexity and are not always sufficient for real-world applications.
+Training RL models, particularly for deep neural network-based models, can be unstable and prone to divergence. small change in the policy or environment can lead to extreme fluctuations in performance, making it difficult to achieve consistent results. This instability is further enhanced in the case of the continuous or high-dimensional action space, where the learning step becomes more complex and less predictable.
+The RL agents trained in specific environments often struggle to generalize their learned policies to new, unseen scenarios. This is the major setback preventing the application of RL to dynamic real-world environments where adaptability is crucial. The challenge is to develop such algorithms that can transfer knowledge across tasks and environments without extensive retraining.
+Designing appropriate reward functions is critical in RL because poorly designed reward functions can lead to unintended behaviors. In addition, RL systems trained on biased data may perpetuate existing biases and lead to discriminatory or unfair outcomes. Both of these issues requires careful consideration of reward structures and data sources to ensure fairness and desired behaviors.
+Annaswamy, Anuradha . (3 May 2023). "Adaptive Control and Intersections with Reinforcement Learning". Annual Review of Control, Robotics, and Autonomous Systems. 6 (1): 65–93. doi:10.1146/annurev-control-062922-090153. ISSN 2573-5144. S2CID 255702873.
+Auer, Peter; Jaksch, Thomas; Ortner, Ronald (2010). "Near-optimal regret bounds for reinforcement learning". Journal of Machine Learning Research. 11: 1563–1600.
+Bertsekas, Dimitri . (2023) [2019]. REINFORCEMENT LEARNING AND OPTIMAL CONTROL (1st ed.). Athena Scientific. ISBN 978-1-886-52939-7.
+Busoniu, Lucian; Babuska, Robert; De Schutter, Bart; Ernst, Damien (2010). Reinforcement Learning and Dynamic Programming using Function Approximators. Taylor & Francis CRC Press. ISBN 978-1-4398-2108-4.
+François-Lavet, Vincent; Henderson, Peter; Islam, Riashat; Bellemare, Marc .; Pineau, Joelle (2018). "An Introduction to Deep Reinforcement Learning". Foundations and Trends in Machine Learning. 11 (3–4): 219–354. arXiv:1811.12560. Bibcode:2018arXiv181112560F. doi:10.1561/2200000071. S2CID 54434537.
+Li, Shengbo Eben (2023). Reinforcement Learning for Sequential Decision and Optimal Control (1st ed.). Springer Verlag, Singapore. doi:10.1007/978-981-19-7784-8. ISBN 978-9-811-97783-1.
+Powell, Warren (2011). Approximate dynamic programming: solving the curses of dimensionality. Wiley-Interscience. Archived from the original on 2016-07-31. Retrieved 2010-09-08.
+Sutton, Richard . (1988). "Learning to predict by the method of temporal differences". Machine Learning. 3: 9–44. doi:10.1007/BF00115009.
+Sutton, Richard .; Barto, Andrew . (2018) [1998]. Reinforcement Learning: An Introduction (2nd ed.). MIT Press. ISBN 978-0-262-03924-6.
+Szita, Istvan; Szepesvari, Csaba (2010). "Model-based Reinforcement Learning with Nearly Tight Exploration Complexity Bounds" (PDF). ICML 2010. Omnipress. pp. 1031–1038. Archived from the original (PDF) on 2010-07-14.
+Dissecting Reinforcement Learning Series of blog post on reinforcement learning with Python code
+(Long) Peek into Reinforcement Learning Deep reinforcement learning (DRL) is subfield of machine learning that combines principles of reinforcement learning (RL) and deep learning. It involves training agents to make decisions by interacting with an environment to maximize cumulative rewards, while using deep neural networks to represent policies, value functions, or environment models. This integration enables DRL systems to process high-dimensional inputs, such as images or continuous control signals, making the approach effective for solving complex tasks. Since the introduction of the deep -network (DQN) in 2015, DRL has achieved significant successes across domains including games, robotics, and autonomous systems, and is increasingly applied in areas such as healthcare, finance, and autonomous vehicles.
+Deep reinforcement learning (DRL) is part of machine learning, which combines reinforcement learning (RL) and deep learning. In DRL, agents learn how decisions are to be made by interacting with environments in order to maximize cumulative rewards, while using deep neural networks to represent policies, value functions, or models of the environment. This integration enables agents to handle high-dimensional input spaces, such as raw images or continuous control signals, making DRL widely used approach for addressing complex tasks.
+Since the development of the deep -network (DQN) in 2015, DRL has led to major breakthroughs in domains such as games, robotics, and autonomous systems. Research in DRL continues to expand rapidly, with active work on challenges like sample efficiency and robustness, as well as innovations in model-based methods, transformer architectures, and open-ended learning. Applications now range from healthcare and finance to language systems and autonomous vehicles.
+Reinforcement learning (RL) is framework in which agents interact with environments by taking actions and learning from feedback in form of rewards or penalties. Traditional RL methods, such as -learning and policy gradient techniques, rely on tabular representations or linear approximations, which are often not scalable to high-dimensional or continuous input spaces.
+DRL came out as solution to above limitation by integrating RL and deep neural networks. This combination enables agents to approximate complex functions and handle unstructured input data like raw images, sensor data, or natural language. The approach became widely recognized following the success of DeepMind' deep -network (DQN), which achieved human-level performance on several Atari video games using only pixel inputs and game scores as feedback.
+Since then, DRL has evolved to include various architectures and learning strategies, including model-based methods, actor-critic frameworks, and applications in continuous control environments. These developments have significantly expanded the applicability of DRL across domains where traditional RL was limited.
+Several algorithmic approaches form the foundation of deep reinforcement learning, each with different strategies for learning optimal behavior.
+One of the earliest and most influential DRL algorithms is the Deep -Network (DQN), which combines -learning with deep neural networks. DQN approximates the optimal action-value function using convolutional neural network and introduced techniques such as experience replay and target networks which stabilize training.
+Policy gradient methods directly optimize the agent’ policy by adjusting parameters in the direction that increases expected rewards. These methods are well-suited to high-dimensional or continuous action spaces and form the basis of many modern DRL algorithms.
+Actor-critic algorithms combine the advantages of value-based and policy-based methods. The actor updates the policy, while the critic evaluates the current policy using value function. Popular variants include A2C (Advantage Actor-Critic) and PPO (Proximal Policy Optimization), both of which are widely used in benchmarks and real-world applications.
+Other methods include multi-agent reinforcement learning, hierarchical RL, and approaches that integrate planning or memory mechanisms, depending on the complexity of the task and environment.
+DRL has been applied to wide range of domains that require sequential decision-making and the ability to learn from high-dimensional input data.
+One of the most well-known applications is in games, where DRL agents have demonstrated performance comparable to or exceeding human-level benchmarks. DeepMind' AlphaGo and AlphaStar, as well as OpenAI Five, are notable examples of DRL systems mastering complex games such as Go, StarCraft II, and Dota 2. While these systems have demonstrated high performance in constrained environments, their success often depends on extensive computational resources and may not generalize easily to tasks outside their training domains.
+In robotics, DRL has been used to train agents for tasks such as locomotion, manipulation, and navigation in both simulated and real-world environments. By learning directly from sensory input, DRL enables robots to adapt to complex dynamics without relying on hand-crafted control rules.
+Other growing areas of application include finance (.., portfolio optimization), healthcare (.., treatment planning and medical decision-making), natural language processing (.., dialogue systems), and autonomous vehicles (.., path planning and control).All of these applications shows how DRL deals with real-world problems like uncertainty, sequential reasoning, and high-dimensional data.
+DRL has several significant challenges which limit its broader deployment.
+One of the most prominent issues is sample inefficiency. DRL algorithms often require millions of interactions with the environment to learn effective policies, which is impractical in many real-world settings where data collection is expensive or time-consuming.
+Another challenge is sparse or delayed reward problem, where feedback signals are infrequent, which makes it difficult for agents to attribute outcomes to specific decisions. Techniques such as reward shaping and exploration strategies have been developed to address this issue.
+DRL systems also tend to be sensitive to hyperparameters and lack robustness across tasks or environments. Models that are trained in simulation fail very often when deployed in the real world due to discrepancies between simulated and real-world dynamics, problem known as the "reality gap."Bias and fairness in DRL systems have also emerged as concerns, particularly in domains like healthcare and finance where imbalanced data can lead to unequal outcomes for underrepresented groups.
+Additionally, concerns about safety, interpretability, and reproducibility have become increasingly important, especially in high-stakes domains such as healthcare or autonomous driving. These issues remain active areas of research in the DRL community.
+Recent developments in DRL have introduced new architectures and training strategies which aims to improving performance, efficiency, and generalization.
+One key area of progress is model-based reinforcement learning, where agents learn an internal model of the environment to simulate outcomes before acting. This kind of approach improves sample efficiency and planning. An example is the Dreamer algorithm, which learns latent space model to train agents more efficiently in complex environments.
+Another major innovation is the use of transformer-based architectures in DRL. Unlike traditional models that rely on recurrent or convolutional networks, transformers can model long-term dependencies more effectively. The Decision Transformer and other similar models treat RL as sequence modeling problem, enabling agents to generalize better across tasks.
+In addition, research into open-ended learning has led to the creation of capable agents that are able to solve range of tasks without task-specific tuning. Similar systems like the ones that are developed by OpenAI show that agents trained in diverse, evolving environments can generalize across new challenges, moving toward more adaptive and flexible intelligence.
+As deep reinforcement learning continues to evolve, researchers are exploring ways to make algorithms more efficient, robust, and generalizable across wide range of tasks. Improving sample efficiency through model-based learning, enhancing generalization with open-ended training environments, and integrating foundation models are among the current research goals.
+Similar area of interest is safe and ethical deployment, particularly in high-risk settings like healthcare, autonomous driving, and finance. Researchers are developing frameworks for safer exploration, interpretability, and better alignment with human values. Ensuring that DRL systems promote equitable outcomes remains an ongoing challenge, especially where historical data may under‑represent marginalized populations.
+The future of DRL may also involve more integration with other subfields of machine learning, such as unsupervised learning, transfer learning, and large language models, enabling agents that can learn from diverse data modalities and interact more naturally with human users. In machine learning, reinforcement learning from human feedback (RLHF) is technique to align an intelligent agent with human preferences. It involves training reward model to represent preferences, which can then be used to train other models through reinforcement learning.
+In classical reinforcement learning, an intelligent agent' goal is to learn function that guides its behavior, called policy. This function is iteratively updated to maximize rewards based on the agent' task performance. However, explicitly defining reward function that accurately approximates human preferences is challenging. Therefore, RLHF seeks to train "reward model" directly from human feedback. The reward model is first trained in supervised manner to predict if response to given prompt is good (high reward) or bad (low reward) based on ranking data collected from human annotators. This model then serves as reward function to improve an agent' policy through an optimization algorithm like proximal policy optimization.
+RLHF has applications in various domains in machine learning, including natural language processing tasks such as text summarization and conversational agents, computer vision tasks like text-to-image models, and the development of video game bots. While RLHF is an effective method of training models to act better in accordance with human preferences, it also faces challenges due to the way the human preference data is collected. Though RLHF does not require massive amounts of data to improve performance, sourcing high-quality preference data is still an expensive process. Furthermore, if the data is not carefully collected from representative sample, the resulting model may exhibit unwanted biases.
+Optimizing model based on human feedback is desirable when task is difficult to specify yet easy to judge. For example, one may want to train model to generate safe text that is both helpful and harmless (such as lacking bias, toxicity, or otherwise harmful content). Asking humans to manually create examples of harmless and harmful text would be difficult and time-consuming. However, humans are adept at swiftly assessing and comparing the harmfulness of different AI-generated text. Therefore, more practical objective would be to allow the model to use this type of human feedback to improve its text generation.
+Despite the clear benefits of incorporating human feedback in training models, prior efforts—including some that leverage reinforcement learning—have encountered significant challenges. Most attempts were either narrow and difficult to generalize, breaking down on more complex tasks, or they faced difficulties learning from sparse (lacking specific information and relating to large amounts of text at time) or noisy (inconsistently rewarding similar outputs) reward functions.
+RLHF was not the first successful method of using human feedback for reinforcement learning, but it is one of the most widely used. The foundation for RLHF was introduced as an attempt to create general algorithm for learning from practical amount of human feedback. The algorithm as used today was introduced by OpenAI in paper on enhancing text continuation or summarization based on human feedback, and it began to gain popularity when the same method was reused in their paper on InstructGPT. RLHF has also been shown to improve the robustness of RL agents and their capacity for exploration, which results in an optimization process more adept at handling uncertainty and efficiently exploring its environment in search of the highest reward.
+Human feedback is commonly collected by prompting humans to rank instances of the agent' behavior. These rankings can then be used to score outputs, for example, using the Elo rating system, which is an algorithm for calculating the relative skill levels of players in game based only on the outcome of each game. While ranking outputs is the most widely adopted form of feedback, recent research has explored other forms, such as numerical feedback, natural language feedback, and prompting for direct edits to the model' output.
+One initial motivation of RLHF was that it requires relatively small amounts of comparison data to be effective. It has been shown that small amount of data can lead to comparable results to larger amount. In addition, increasing the amount of data tends to be less effective than proportionally increasing the size of the reward model. Nevertheless, larger and more diverse amount of data can be crucial for tasks where it is important to avoid bias from partially representative group of annotators.
+When learning from human feedback through pairwise comparison under the Bradley–Terry–Luce model (or the Plackett–Luce model for -wise comparisons over more than two comparisons), the maximum likelihood estimator (MLE) for linear reward functions has been shown to converge if the comparison data is generated under well-specified linear model. This implies that, under certain conditions, if model is trained to decide which choices people would prefer between pairs (or groups) of choices, it will necessarily improve at predicting future preferences. This improvement is expected as long as the comparisons it learns from are based on consistent and simple rule.
+Both offline data collection models, where the model is learning by interacting with static dataset and updating its policy in batches, as well as online data collection models, where the model directly interacts with the dynamic environment and updates its policy immediately, have been mathematically studied proving sample complexity bounds for RLHF under different feedback models.
+In the offline data collection model, when the objective is policy training, pessimistic MLE that incorporates lower confidence bound as the reward estimate is most effective. Moreover, when applicable, it has been shown that considering -wise comparisons directly is asymptotically more efficient than converting them into pairwise comparisons for prediction purposes.
+In the online scenario, when human feedback is collected through pairwise comparisons under the Bradley–Terry–Luce model and the objective is to minimize the algorithm' regret (the difference in performance compared to an optimal agent), it has been shown that an optimistic MLE that incorporates an upper confidence bound as the reward estimate can be used to design sample efficient algorithms (meaning that they require relatively little training data). key challenge in RLHF when learning from pairwise (or dueling) comparisons is associated with the non-Markovian nature of its optimal policies. Unlike simpler scenarios where the optimal strategy does not require memory of past actions, in RLHF, the best course of action often depends on previous events and decisions, making the strategy inherently memory-dependent.
+RLHF has been applied to various domains of natural language processing (NLP), such as conversational agents, text summarization, and natural language understanding. Ordinary reinforcement learning, in which agents learn from their actions based on predefined "reward function", is difficult to apply to NLP tasks because the rewards tend to be difficult to define or measure, especially when dealing with complex tasks that involve human values or preferences. RLHF can steer NLP models, in particular language models, to provide answers that align with human preferences with regard to such tasks by capturing their preferences beforehand in the reward model. This results in model capable of generating more relevant responses and rejecting inappropriate or irrelevant queries. Some notable examples of RLHF-trained language models are OpenAI' ChatGPT (and its predecessor InstructGPT), DeepMind' Sparrow, Google' Gemini, and Anthropic' Claude.
+In computer vision, RLHF has also been used to align text-to-image models. Studies that successfully used RLHF for this goal have noted that the use of KL regularization in RLHF, which aims to prevent the learned policy from straying too far from the unaligned model, helped to stabilize the training process by reducing overfitting to the reward model. The final image outputs from models trained with KL regularization were noted to be of significantly higher quality than those trained without. Other methods tried to incorporate the feedback through more direct training—based on maximizing the reward without the use of reinforcement learning—but conceded that an RLHF-based approach would likely perform better due to the online sample generation used in RLHF during updates as well as the aforementioned KL regularization over the prior model, which mitigates overfitting to the reward function.
+RLHF was initially applied to other areas, such as the development of video game bots and tasks in simulated robotics. For example, OpenAI and DeepMind trained agents to play Atari games based on human preferences. In classical RL-based training of such bots, the reward function is simply correlated to how well the agent is performing in the game, usually using metrics like the in-game score. In comparison, in RLHF, human is periodically presented with two clips of the agent' behavior in the game and must decide which one looks better. This approach can teach agents to perform at competitive level without ever having access to their score. In fact, it was shown that RLHF can sometimes lead to superior performance over RL with score metrics because the human' preferences can contain more useful information than performance-based metrics. The agents achieved strong performance in many of the environments tested, often surpassing human performance.
+In RLHF, two different models are trained: reward model and reinforcement learning (RL) policy. The reward model learns to determine what behavior is desirable based on human feedback, while the policy is guided by the reward model to determine the agent' actions. Both models are commonly initialized using pre-trained autoregressive language model. This model is then customarily trained in supervised manner on relatively small dataset of pairs of prompts to an assistant and their accompanying responses, written by human annotators.
+The reward model is usually initialized with pre-trained model, as this initializes it with an understanding of language and focuses training explicitly on learning human preferences. In addition to being used to initialize the reward model and the RL policy, the model is then also used to sample data to be compared by annotators.
+The reward model is then trained by replacing the final layer of the previous model with randomly initialized regression head. This change shifts the model from its original classification task over its vocabulary to simply outputting number corresponding to the score of any given prompt and response. This model is trained on the human preference comparison data collected earlier from the supervised model. In particular, it is trained to minimize the following cross-entropy loss function:
+( )=- 1K 2E(,yw,yl)[( ( (,yw)- (,yl)))]=- 1K 2E(,yw,yl) [ er (,yw)er (,yw)+er (,yl)]
+is the number of responses the labelers ranked,
+(,)
+is the output of the reward model for prompt
+is the preferred completion over
+()
+denotes the sigmoid function, and
+denotes the expected value. This can be thought of as form of logistic regression, where the model predicts the probability that response
+is preferred over
+This loss function essentially measures the difference between the reward model' predictions and the decisions made by humans. The goal is to make the model' guesses as close as possible to the humans' preferences by minimizing the difference measured by this equation. In the case of only pairwise comparisons,
+, so the factor of
+1/ K2=1
+. In general, all
+K2
+comparisons from each prompt are used for training as single batch.
+After training, the outputs of the model are normalized such that the reference completions have mean score of 0. That is,
+yr (,)=0
+for each query and reference pair
+by calculating the mean reward across the training dataset and setting it as the bias in the reward head.
+Similarly to the reward model, the human feedback policy is also initialized from pre-trained model.
+The key is to understand language generation as if it is game to be learned by RL. In RL, policy is function that maps game state to game action. In RLHF, the "game" is the game of replying to prompts. prompt is game state, and response is game action. This is fairly trivial kind of game, since every game lasts for exactly one step. Nevertheless, it is game, and so RL algorithms can be applied to it.
+The first step in its training is supervised fine-tuning (SFT). This step does not require the reward model. Instead, the pre-trained model is trained on dataset
+that contains prompt-response pairs
+. Then, during SFT, the model is trained to auto-regressively generate the corresponding response
+when given random prompt
+. The original paper recommends to SFT for only one epoch, since more than that causes overfitting.
+is usually written by human contractors, who write both the prompts and responses.
+The second step uses policy gradient method to the reward model. It uses dataset
+, which contains prompts, but not responses. Like most policy gradient methods, this algorithm has an outer loop and two inner loops:
+Initialize the policy
+RL
+SFT
+, the policy output from SFT.
+Loop for many steps.
+Initialize new empty dataset
+RL
+Loop for many steps
+Sample random prompt
+Generate response
+from the policy
+RL
+Calculate the reward signal
+(,)
+from the reward model
+
+Add the triple
+(,, (,))
+RL
+
+by policy gradient method to increase the objective function
+objective( )=(,) RL[ (,)- ( RL(|) SFT(|))]
+(,) RL
+is equivalent to
+DRL, RL( |)
+, which means "sample prompt from
+, then sample response from the policy".
+The objective function has two parts. The first part is simply the expected reward
+, and is standard for any RL algorithm. The second part is "penalty term" involving the KL divergence. The strength of the penalty term is determined by the hyperparameter
+
+This KL term works by penalizing the KL divergence ( measure of statistical distance between distributions) between the model being fine-tuned and the initial supervised model. By choosing an appropriate
+
+, the training can balance learning from new data while retaining useful information from the initial model, increasing generalization by avoiding fitting too closely to the new data. Aside from preventing the new model from producing outputs too dissimilar those of the initial model, second motivation of including the KL term is to encourage the model to output high-entropy text, so as to prevent the model from collapsing to small number of canned responses.
+In simpler terms, the objective function calculates how well the policy' responses are expected to align with human feedback. The policy generates responses to prompts, and each response is evaluated both on how well it matches human preferences (as measured by the reward model) and how similar it is to responses the model would naturally generate. The goal is to balance improving alignment with human preferences while ensuring the model' responses remain diverse and not too far removed from what it has learned during its initial training. This helps the model not only to provide answers that people find useful or agreeable but also to maintain broad understanding and avoid overly narrow or repetitive responses.
+The policy function is usually trained by proximal policy optimization (PPO) algorithm. That is, the parameter
+
+is trained by gradient ascent on the clipped surrogate function.
+Classically, the PPO algorithm employs generalized advantage estimation, which means that there is an extra value estimator
+()
+, that updates concurrently with the policy
+tRL
+during PPO training:
+tRL, , +1RL, +1,
+. The value estimator is used only during training, and not outside of training.
+The PPO uses gradient descent on the following clipped surrogate advantage:
+LPPO( ):=Ex DRL, (|)[ ( RL(|) tRL(|)(,), clip ( RL(|) tRL(|),1- ,1+ )(,))]
+where the advantage term
+is defined as
+(,)- ()
+. That is, the advantage is computed as the difference between the reward (the expected return) and the value estimation (the expected return from the policy). This is used to train the policy by gradient ascent on it, usually using standard momentum-gradient optimizer, like the Adam optimizer.
+The original paper initialized the value estimator from the trained reward model. Since PPO is an actor-critic algorithm, the value estimator is updated concurrently with the policy, via minimizing the squared TD-error, which in this case equals the squared advantage term:
+LTD( )= (,) tRL[( (,)- ( tRL(|) SFT(|))- ())2]
+which is minimized by gradient descent on it. Other methods than squared TD-error might be used. See the actor-critic algorithm page for details.
+third term is commonly added to the objective function to prevent the model from catastrophic forgetting. For example, if the model is only trained in customer service, then it might forget general knowledge in geography. To prevent this, the RLHF process incorporates the original language modeling objective. That is, some random texts
+are sampled from the original pretraining dataset
+, and the model is trained to maximize the log-likelihood of the text
+( RL())
+. The final objective function is written as:
+( )=(,) RL[ (,)- ( RL(|) SFT(|))]+ Ex Dpretrain[( RL())]
+
+controls the strength of this pretraining term. This combined objective function is called PPO-ptx, where "ptx" means "Mixing Pretraining Gradients". It was first used in the InstructGPT paper.
+In total, this objective function defines the method for adjusting the RL policy, blending the aim of aligning with human feedback and maintaining the model' original language understanding.
+So, writing out fully explicitly, the PPO-ptx objective function is:
+LPPO-ptx( ):=(,) tRL[ ( RL(|) tRL(|)(,), clip ( RL(|) tRL(|),1- ,1+ )(,))- ( RL(|) SFT(|))]+ Ex Dpretrain[( RL())]
+which is optimized by gradient ascent on it.
+RLHF suffers from challenges with collecting human feedback, learning reward model, and optimizing the policy. Compared to data collection for techniques like unsupervised or self-supervised learning, collecting data for RLHF is less scalable and more expensive. Its quality and consistency may vary depending on the task, interface, and the preferences and biases of individual humans.
+The effectiveness of RLHF depends on the quality of human feedback. For instance, the model may become biased, favoring certain groups over others, if the feedback lacks impartiality, is inconsistent, or is incorrect. There is risk of overfitting, where the model memorizes specific feedback examples instead of learning to generalize. For instance, feedback predominantly from specific demographic might lead the model to learn peculiarities or noise, along with the intended alignment. Excessive alignment to the specific feedback it received (that is, to the bias therein) can lead to the model performing sub-optimally in new contexts or when used by different groups. single reward function cannot always represent the opinions of diverse groups of people. Even with representative sample, conflicting views and preferences may result in the reward model favoring the majority' opinion, potentially disadvantaging underrepresented groups.
+In some cases, as is possible in regular reinforcement learning, there may be risk of the model learning to manipulate the feedback process or game the system to achieve higher rewards rather than genuinely improving its performance. In the case of RLHF, model may learn to exploit the fact that it is rewarded for what is evaluated positively and not necessarily for what is actually good, which can lead to it learning to persuade and manipulate. For example, models might learn that apparent confidence, even if inaccurate, garners higher rewards. Such behavior, if unchecked, is not just incentivized but can cause significant deployment issues due to the model' potential to mislead. Studies have found that humans are not skilled at identifying mistakes in LLM outputs in complex tasks; therefore, models learning to generate confident-sounding yet incorrect text can lead to significant issues when deployed.
+Similarly to RLHF, reinforcement learning from AI feedback (RLAIF) relies on training preference model, except that the feedback is automatically generated. This is notably used in Anthropic' constitutional AI, where the AI feedback is based on the conformance to the principles of constitution.
+Direct alignment algorithms (DAA) have been proposed as new class of algorithms that seek to directly optimize large language models (LLMs) on human feedback data in supervised manner instead of the traditional policy-gradient methods.
+These algorithms aim to align models with human intent more transparently by removing the intermediate step of training separate reward model. Instead of first predicting human preferences and then optimizing against those predictions, direct alignment methods train models end-to-end on human-labeled or curated outputs. This reduces potential misalignment risks introduced by proxy objectives or reward hacking.
+By directly optimizing for the behavior preferred by humans, these approaches often enable tighter alignment with human values, improved interpretability, and simpler training pipelines compared to RLHF.
+Direct preference optimization (DPO) is technique to learn human preferences. Like RLHF, it has been applied to align pre-trained large language models using human-generated preference data. Unlike RLHF, however, which first trains separate intermediate model to understand what good outcomes look like and then teaches the main model how to achieve those outcomes, DPO simplifies the process by directly adjusting the main model according to people' preferences. It uses change of variables to define the "preference loss" directly as function of the policy and uses this loss to fine-tune the model, helping it understand and prioritize human preferences without needing separate step. Essentially, this approach directly shapes the model' decisions based on positive or negative human feedback.
+Recall, the pipeline of RLHF is as follows:
+We begin by gathering human preference dataset
+We then fit reward model
+to data, by maximum likelihood estimation using the Plackett–Luce model
+*= (,y1, ,yN) [ =1N er(,yk) =kNer(,yi)]
+We finally train an optimal policy
+*
+that maximizes the objective function:
+*= RL (,) RL[*(,)- ( RL(|) SFT(|))]
+However, instead of doing the intermediate step of the reward model, DPO directly optimizes for the final policy.
+First, solve directly for the optimal policy, which can be done by Lagrange multipliers, as usual in statistical mechanics:
+*(|)= SFT(|)(*(,)/ )(),
+is the partition function. This is unfortunately not tractable, since it requires summing over all possible responses:
+()= SFT(|)(*(,)/ )= SFT( |)[(*(,)/ )]
+Next, invert this relationship to express the reward implicitly in terms of the optimal policy:
+*(,)= *(|) SFT(|)+ ().
+Finally, plug it back to the maximum likelihood estimator, we obtain
+*= (,y1, ,yN) [ =1N (yk|) SFT(yk|) =kNe (yi|) SFT(yi|)]
+Usually, DPO is used for modeling human preference in pairwise comparisons, so that
+. In that case, we have
+*= (,yw,yl) [ ( (yw|) SFT(yw|)- (yl|) SFT(yl|))]
+DPO eliminates the need for separate reward model or reinforcement learning loop, treating alignment as supervised learning problem over preference data. This is simpler to implement and train than RLHF and has been shown to produce comparable and sometimes superior results. Nevertheless, RLHF has also been shown to beat DPO on some datasets, for example, on benchmarks that attempt to measure truthfulness. Therefore, the choice of method may vary depending on the features of the human preference data and the nature of the task.
+Identity preference optimization (IPO) is modification to the original DPO objective that introduces regularization term to reduce the chance of overfitting. It remains robust to overtraining by assuming noise in the preference data.
+Foremost, IPO first applies non-linear mapping over the probability distribution of preferences
+()=(/(1-))
+instead of the Bradley-Terry assumption to soften the probability of preferences and smooth the labels. Here,
+()
+
+preference objective separate from the policy objective. This helps avoid the overfitting issue of the assumption that pairwise preferences can be substituted for point-wise rewards, which weakens the KL regularization by heavily skewing the preference distribution.
+As with DPO, IPO is also formulated as an offline learning objective learned over human preference dataset
+. In particular, the IPO introduces new objective by applying mapping
+
+over the preference probability distribution. Practically,
+
+is taken as the identity mapping, which results in IPO. Hence, IPO also directly optimizes for the final policy from the preference dataset and bypasses the reward modeling stage by the following objective:
+[ (*(yw yl|))]- DKL( || ref)
+*(yw yl|)
+is preference distribution of the chosen responses
+over the rejected responses
+. However, since
+is not observed directly, we sample from Bernoulli distribution from the offline preference dataset as:
+*( '|)= [ prefers to ' given \]
+To solve this objective, IPO minimizes the quadratic loss function:
+alignedMinimize & (,yw,yl) [( (,yw,yl)-(yw,yl))]2\\&= ,yw,yl) [Ih (,yw,yl)-(1-) (,yl,yw)- 12 -1]2\\&= ,yw,yl [ (,yw,yl)- 12 -1]2aligned
+(,yw,yl)= ( (yw|) ref(yw|)))- ( (yl|) ref(yl|))
+is function drawn from the Bernoulli distribution from the preference dataset. Here,
+is 1 if
+is preferred to
+which happens with probability
+*( ')
+, and 0 otherwise. As such, the simplification of the expression directly follows from exploiting the symmetry of
+from the Bernoulli such that for each datapoint
+(yw,yl)
+. In particular this symmetry can be represented as
+[py]= 12
+[(,')]=py
+In summary, IPO can control the gap between the log-likelihood ratios of the policy model and the reference by always regularizing the solution towards the reference model. It allows learning directly from preferences without reward modelling stage and without relying on the Bradley-Terry modelisation assumption that assumes that pairwise preferences can be substituted with pointwise rewards. Thus, it avoids overfitting to the preference dataset especially when preferences are near deterministic and the KL term fails.
+Kahneman-Tversky optimization (KTO) is another direct alignment algorithm drawing from prospect theory to model uncertainty in human decisions that may not maximize the expected value.
+In general, KTO seeks to optimize class of new loss functions proposed as “human-aware losses” (HALO) formulated under prospect theory to model “human values” of query, response pair
+( (,)-EQ[ (,)'])
+. function is defined as human-aware loss for the value described by the general HALO objective:
+( , ref)= , [ax,yv ( (,)\;-\; Ey' [\, (,')\,] reference point )]+CD
+is the preference data,
+is some constant relevant to the dataset, and
+is some distribution representing the baseline or “reference”. Each training example is attached label
+ax, \+1,-1\
+that tells us if the example is desirable (we want to push up its reward) and -1 if it’ undesirable (in order to push down its reward). Unlike previous definitions of the reward, KTO defines
+(,)
+as the “implied reward” taken by the log-likelihood ratio between the policy model and the reference model
+( (|) ref(|))
+. Here, the value function
+is non-linear (typically concave) function that mimics human loss aversion and risk aversion. As opposed to previous preference optimization algorithms, the motivation of KTO lies in maximizing the utility of model outputs from human perspective rather than maximizing the likelihood of “better” label (chosen vs. rejected responses). Hence, it constructs more relaxed generalization to preference distributions by requiring only binary feedback signal
+instead of explicit preference pairs. For each example
+in the dataset
+, KTO explicitly optimizes the HALO objective as:
+*\;=\; \;\; (,)\, \, [ \;-\;(,) ]
+
+is class-specific constant (..,
+= or
+) controlling how strongly the model should push up good outputs vs. push down bad ones. The value function
+is defined piecewise depending on whether
+is desirable (
+
+) or undesirable (
+
+(,)\;=\;cases \, \! (\, \, ( (,)\;-\;z0 ) ),& if desirable ,\\[6pt] \, \! (\, \, (z0\;-\; (,) ) ),& if undesirable xcases
+z0= KL \! (\, (' )\; \; ref (' ) )
+is baseline given by the Kullback–Leibler divergence. Here,
+
+controls how “risk-averse” the value function is (larger
+
+= faster saturation in the logistic function
+
+). Intuitively, desirable outputs push the model to increase
+
+-z0
+becomes more positive. Undesirable ones push it in the opposite direction, so the reward is less than the reference. Since many real-world feedback pipelines yield "like/dislike" data more easily than pairwise comparisons, KTO is designed to be data-cheap and to reflect "loss aversion" more directly by using straightforward notion of "good vs. bad" at the example level.
+"Learning RLHF (PPO) with codes (Huggingface TRL) | Yiyang Feng". yiyangfeng.me. Retrieved 2025-01-26.
+"The Implementation Details of RLHF with PPO". huggingface.co. 2025-01-19. Retrieved 2025-01-26.
+"Proximal Policy Optimization — Spinning Up documentation". spinningup.openai.com. Retrieved 2025-01-26.
+Huang, Shengyi; Noukhovitch, Michael; Hosseini, Arian; Rasul, Kashif; Wang, Weixun; Tunstall, Lewis (2024-03-24), The + Implementation Details of RLHF with PPO: Case Study on TL;DR Summarization, arXiv:2403.17031 Multi-agent reinforcement learning (MARL) is sub-field of reinforcement learning. It focuses on studying the behavior of multiple learning agents that coexist in shared environment. Each agent is motivated by its own rewards, and does actions to advance its own interests; in some environments these interests are opposed to the interests of other agents, resulting in complex group dynamics.
+Multi-agent reinforcement learning is closely related to game theory and especially repeated games, as well as multi-agent systems. Its study combines the pursuit of finding ideal algorithms that maximize rewards with more sociological set of concepts. While research in single-agent reinforcement learning is concerned with finding the algorithm that gets the biggest number of points for one agent, research in multi-agent reinforcement learning evaluates and quantifies social metrics, such as cooperation, reciprocity, equity, social influence, language and discrimination.
+Similarly to single-agent reinforcement learning, multi-agent reinforcement learning is modeled as some form of Markov decision process (MDP). Fix set of agents
+. We then define:
+of environment states.
+Ai
+of actions for each of the agents
+=\1,...,\
+(,')=(st+1=' st=, at= )
+is the probability of transition (at time
+) from state
+under joint action
+
+(,')
+is the immediate joint reward after the transition from
+with joint action
+
+In settings with perfect information, such as the games of chess and Go, the MDP would be fully observable. In settings with imperfect information, especially in real-world applications like self-driving cars, each agent would access an observation that only has part of the information about the current state. In the partially observable setting, the core model is the partially observable stochastic game in the general case, and the decentralized POMDP in the cooperative case.
+When multiple agents are acting in shared environment their interests might be aligned or misaligned. MARL allows exploring all the different alignments and how they affect the agents' behavior:
+In pure competition settings, the agents' rewards are exactly opposite to each other, and therefore they are playing against each other.
+Pure cooperation settings are the other extreme, in which agents get the exact same rewards, and therefore they are playing with each other.
+Mixed-sum settings cover all the games that combine elements of both cooperation and competition.
+When two agents are playing zero-sum game, they are in pure competition with each other. Many traditional games such as chess and Go fall under this category, as do two-player variants of video games like StarCraft. Because each agent can only win at the expense of the other agent, many complexities are stripped away. There is no prospect of communication or social dilemmas, as neither agent is incentivized to take actions that benefit its opponent.
+The Deep Blue and AlphaGo projects demonstrate how to optimize the performance of agents in pure competition settings.
+One complexity that is not stripped away in pure competition settings is autocurricula. As the agents' policy is improved using self-play, multiple layers of learning may occur.
+MARL is used to explore how separate agents with identical interests can communicate and work together. Pure cooperation settings are explored in recreational cooperative games such as Overcooked, as well as real-world scenarios in robotics.
+In pure cooperation settings all the agents get identical rewards, which means that social dilemmas do not occur.
+In pure cooperation settings, oftentimes there are an arbitrary number of coordination strategies, and agents converge to specific "conventions" when coordinating with each other. The notion of conventions has been studied in language and also alluded to in more general multi-agent collaborative tasks.
+Most real-world scenarios involving multiple agents have elements of both cooperation and competition. For example, when multiple self-driving cars are planning their respective paths, each of them has interests that are diverging but not exclusive: Each car is minimizing the amount of time it' taking to reach its destination, but all cars have the shared interest of avoiding traffic collision.
+Zero-sum settings with three or more agents often exhibit similar properties to mixed-sum settings, since each pair of agents might have non-zero utility sum between them.
+Mixed-sum settings can be explored using classic matrix games such as prisoner' dilemma, more complex sequential social dilemmas, and recreational games such as
+Among Us, Diplomacy and
+Mixed-sum settings can give rise to communication and social dilemmas.
+As in game theory, much of the research in MARL revolves around social dilemmas, such as prisoner' dilemma, chicken and stag hunt.
+While game theory research might focus on Nash equilibria and what an ideal policy for an agent would be, MARL research focuses on how the agents would learn these ideal policies using trial-and-error process. The reinforcement learning algorithms that are used to train the agents are maximizing the agent' own reward; the conflict between the needs of the agents and the needs of the group is subject of active research.
+Various techniques have been explored in order to induce cooperation in agents: Modifying the environment rules, adding intrinsic rewards, and more.
+Social dilemmas like prisoner' dilemma, chicken and stag hunt are "matrix games". Each agent takes only one action from choice of two possible actions, and simple 2x2 matrix is used to describe the reward that each agent will get, given the actions that each agent took.
+In humans and other living creatures, social dilemmas tend to be more complex. Agents take multiple actions over time, and the distinction between cooperating and defecting is not as clear cut as in matrix games. The concept of sequential social dilemma (SSD) was introduced in 2017 as an attempt to model that complexity. There is ongoing research into defining different kinds of SSDs and showing cooperative behavior in the agents that act in them.
+An autocurriculum (plural: autocurricula) is reinforcement learning concept that' salient in multi-agent experiments. As agents improve their performance, they change their environment; this change in the environment affects themselves and the other agents. The feedback loop results in several distinct phases of learning, each depending on the previous one. The stacked layers of learning are called an autocurriculum. Autocurricula are especially apparent in adversarial settings, where each group of agents is racing to counter the current strategy of the opposing group.
+The Hide and Seek game is an accessible example of an autocurriculum occurring in an adversarial setting. In this experiment, team of seekers is competing against team of hiders. Whenever one of the teams learns new strategy, the opposing team adapts its strategy to give the best possible counter. When the hiders learn to use boxes to build shelter, the seekers respond by learning to use ramp to break into that shelter. The hiders respond by locking the ramps, making them unavailable for the seekers to use. The seekers then respond by "box surfing", exploiting glitch in the game to penetrate the shelter. Each "level" of learning is an emergent phenomenon, with the previous level as its premise. This results in stack of behaviors, each dependent on its predecessor.
+Autocurricula in reinforcement learning experiments are compared to the stages of the evolution of life on Earth and the development of human culture. major stage in evolution happened 2-3 billion years ago, when photosynthesizing life forms started to produce massive amounts of oxygen, changing the balance of gases in the atmosphere. In the next stages of evolution, oxygen-breathing life forms evolved, eventually leading up to land mammals and human beings. These later stages could only happen after the photosynthesis stage made oxygen widely available. Similarly, human culture could not have gone through the Industrial Revolution in the 18th century without the resources and insights gained by the agricultural revolution at around 10,000 BC.
+Multi-agent reinforcement learning has been applied to variety of use cases in science and industry:
+Multi-agent reinforcement learning has been used in research into AI alignment. The relationship between the different agents in MARL setting can be compared to the relationship between human and an AI agent. Research efforts in the intersection of these two fields attempt to simulate possible conflicts between human' intentions and an AI agent' actions, and then explore which variables could be changed to prevent these conflicts.
+There are some inherent difficulties about multi-agent deep reinforcement learning. The environment is not stationary anymore, thus the Markov property is violated: transitions and rewards do not only depend on the current state of an agent.
+Stefano . Albrecht, Filippos Christianos, Lukas Schäfer. Multi-Agent Reinforcement Learning: Foundations and Modern Approaches. MIT Press, 2024. https://www.marl-book.com
+Kaiqing Zhang, Zhuoran Yang, Tamer Basar. Multi-agent reinforcement learning: selective overview of theories and algorithms. Studies in Systems, Decision and Control, Handbook on RL and Control, 2021. [1]
+Yang, Yaodong; Wang, Jun (2020). "An Overview of Multi-Agent Reinforcement Learning from Game Theoretical Perspective". arXiv:2011.00583 [cs.MA]. In the context of artificial neural networks, the rectifier or ReLU (rectified linear unit) activation function is an activation function defined as the non-negative part of its argument, .., the ramp function:
+ReLU ()=+=(0,)= +||2=casesx&if >0,\\0& 0cases
+is the input to neuron. This is analogous to half-wave rectification in electrical engineering.
+ReLU is one of the most popular activation functions for artificial neural networks, and finds application in computer vision and speech recognition using deep neural nets and computational neuroscience.
+The ReLU was first used by Alston Householder in 1941 as mathematical abstraction of biological neural networks.
+Kunihiko Fukushima in 1969 used ReLU in the context of visual feature extraction in hierarchical neural networks. Thirty years later, Hahnloser et al. argued that ReLU approximates the biological relationship between neural firing rates and input current, in addition to enabling recurrent neural network dynamics to stabilise under weaker criteria.
+Prior to 2010, most activation functions used were the logistic sigmoid (which is inspired by probability theory; see logistic regression) and its more numerically efficient counterpart, the hyperbolic tangent. Around 2010, the use of ReLU became common again.
+Jarrett et al. (2009) noted that rectification by either absolute or ReLU (which they called "positive part") was critical for object recognition in convolutional neural networks (CNNs), specifically because it allows average pooling without neighboring filter outputs cancelling each other out. They hypothesized that the use of sigmoid or tanh was responsible for poor performance in previous CNNs.
+Nair and Hinton (2010) made theoretical argument that the softplus activation function should be used, in that the softplus function numerically approximates the sum of an exponential number of linear models that share parameters. They then proposed ReLU as good approximation to it. Specifically, they began by considering single binary neuron in Boltzmann machine that takes
+as input, and produces 1 as output with probability
+()= 11+-
+. They then considered extending its range of output by making infinitely many copies of it
+X1,X2,X3,
+, that all take the same input, offset by an amount
+0.5,1.5,2.5,
+, then their outputs are added together as
+=1 Xi
+. They then demonstrated that
+=1 Xi
+is approximately equal to
+((1+ex), ())
+, which is also approximately equal to
+ReLU ( (, ()))
+
+stands for the gaussian distribution.
+They also argued for another reason for using ReLU: that it allows "intensity equivariance" in image recognition. That is, multiplying input image by constant
+multiplies the output also. In contrast, this is false for other activation functions like sigmoid or tanh. They found that ReLU activation allowed good empirical performance in restricted Boltzmann machines.
+Glorot et al (2011) argued that ReLU has the following advantages over sigmoid or tanh. ReLU is more similar to biological neurons' responses in their main operating regime. ReLU avoids vanishing gradients. ReLU is cheaper to compute. ReLU creates sparse representation naturally, because many hidden units output exactly zero for given input. They also found empirically that deep networks trained with ReLU can achieve strong performance without unsupervised pre-training, especially on large, purely supervised tasks.
+Advantages of ReLU include:
+Sparse activation: for example, in randomly initialized network, only about 50% of hidden units are activated (.. have non-zero output).
+Better gradient propagation: fewer vanishing gradient problems compared to sigmoidal activation functions that saturate in both directions.
+Efficiency: only requires comparison and addition.
+Scale-invariant (homogeneous, or "intensity equivariance"):
+(0,ax)=(0,) for 0
+Possible downsides can include:
+Non-differentiability at zero (however, it is differentiable anywhere else, and the value of the derivative at zero can be chosen to be 0 or 1 arbitrarily).
+Not zero-centered: ReLU outputs are always non-negative. This can make it harder for the network to learn during backpropagation, because gradient updates tend to push weights in one direction (positive or negative). Batch normalization can help address this.
+ReLU is unbounded.
+Redundancy of the parametrization: Because ReLU is scale-invariant, the network computes the exact same function by scaling the weights and biases in front of ReLU activation by
+, and the weights after by
+Dying ReLU: ReLU neurons can sometimes be pushed into states in which they become inactive for essentially all inputs. In this state, no gradients flow backward through the neuron, and so the neuron becomes stuck in perpetually inactive state (it "dies"). This is form of the vanishing gradient problem. In some cases, large numbers of neurons in network can become stuck in dead states, effectively decreasing the model capacity and potentially even halting the learning process. This problem typically arises when the learning rate is set too high. It may be mitigated by using "leaky" ReLU instead, where small positive slope is assigned for
+. However, depending on the task, performance may be reduced.
+Leaky ReLU (2014) allows small, positive gradient when the unit is inactive, helping to mitigate the vanishing gradient problem. This gradient is defined by parameter
+
+, typically set to 0.01–0.3.
+()=casesx&>0,\\ & 0,cases '()=cases1&>0,\\ & 0.cases
+The same function can also be expressed without the piecewise notation as:
+()= 1+ 2x+ 1- 2||
+Parametric ReLU (PReLU, 2016) takes this idea further by making
+
+learnable parameter along with the other network parameters.
+Note that for
+1
+, this is equivalent to
+()=(, )
+and thus has relation to "maxout" networks.
+Concatenated ReLU (CReLU, 2016) preserves positive and negative phase information by returning two values:
+()=[ ReLU (), ReLU (-)].
+smooth approximation to the rectifier is the analytic function
+()=(1+ex), '()= ex1+ex= 11+-
+which is called the softplus (2000) or SmoothReLU function. For large negative
+it is roughly
+1
+, so just above 0, while for large positive
+it is roughly
+, so just above
+This function can be approximated as:
+(1+ex) cases 2,&=0,\\[6pt] x1--/ 2,& 0cases
+By making the change of variables
+, this is equivalent to
+2(1+2y) cases1,&=0,\\[6pt] y1--,& 0cases
+sharpness parameter
+may be included:
+()= (1+ekx), '()= ekx1+ekx= 11+-kx
+The derivative of softplus is the logistic function. This in turn can be viewed as smooth approximation of the derivative of the rectifier, the Heaviside step function.
+The multivariable generalization of single-variable softplus is the LogSumExp with the first argument set to zero:
+LSE0 +(x1, ,xn):= LSE (0,x1, ,xn)=(1+ex1+ +exn)
+The LogSumExp function is
+LSE (x1, ,xn)=(ex1+ +exn)
+and its gradient is the softmax; the softmax with the first argument set to zero is the multivariable generalization of the logistic function. Both LogSumExp and softmax are used in machine learning.
+Exponential linear units (2015) smoothly allow negative values. This is an attempt to make the mean activations closer to zero, which speeds up learning. It has been shown that ELUs can obtain higher classification accuracy than ReLUs.
+()=casesx&>0,\\ (ex-1)& 0cases '()=cases1&>0,\\ ex& 0cases
+In these formulas,
+
+is hyperparameter to be tuned with the constraint
+0
+Given the same interpretation of
+
+, ELU can be viewed as smoothed version of shifted ReLU (SReLU), which has the form
+()=(- ,)
+GELU (2016) is smooth approximation to the rectifier:
+()= (),
+'()= '()+ ()
+()=( )
+is the cumulative distribution function of the standard normal distribution.
+This activation function is illustrated in the figure at the start of this article. It has "bump" with negative derivative to the left of < 0. It serves as the default activation for many transformer models such as BERT.
+The SiLU (sigmoid linear unit) or swish function is another smooth approximation which uses the sigmoid (logistic) function, first introduced in the 2016 GELU paper:
+()= sigmoid (),
+'()= sigmoid '()+ sigmoid ()
+It is cheaper to calculate than GELU. It also has "bump".
+The mish function (2019) can also be used as smooth approximation of the rectifier. It is defined as
+()= ( softplus () ),
+is the hyperbolic tangent, and
+softplus ()
+is the softplus function.
+Mish was obtained by experimenting with functions similar to Swish (SiLU, see above). It is non-monotonic (has "bump") like Swish. The main new feature is that it exhibits "self-regularizing" behavior attributed to term in its first derivative.
+Squareplus (2021) is the function
+()= + x2+b2
+0
+is hyperparameter that determines the "size" of the curved region near
+. (For example, letting
+yields ReLU, and letting
+yields the metallic mean function.)
+Squareplus shares many properties with softplus: It is monotonic, strictly positive, approaches 0 as
+-
+, approaches the identity as
++
+, and is
+
+smooth. However, squareplus can be computed using only algebraic functions, making it well-suited for settings where computational resources or instruction sets are limited. Additionally, squareplus requires no special consideration to ensure numerical stability when
+ExtendeD Exponential Linear Unit (DELU, 2023) is an activation function which is smoother within the neighborhood of zero and sharper for bigger values, allowing better allocation of neurons in the learning process for higher performance. Thanks to its unique design, it has been shown that DELU may obtain higher classification accuracy than ReLU and ELU.
+()=casesx&>xc,\\(eax-1)/& xccases '()=cases1&>xc,\\(/)eax& xccases
+In these formulas,
+are hyperparameter values which could be set as default constraints
+, as done in the original work.
+Layer (deep learning) Physics-informed neural networks (PINNs), also referred to as Theory-Trained Neural Networks (TTNs), are type of universal function approximators that can embed the knowledge of any physical laws that govern given data-set in the learning process, and can be described by partial differential equations (PDEs). Low data availability for some biological and engineering problems limit the robustness of conventional machine learning models used for these applications. The prior knowledge of general physical laws acts in the training of neural networks (NNs) as regularization agent that limits the space of admissible solutions, increasing the generalizability of the function approximation. This way, embedding this prior information into neural network results in enhancing the information content of the available data, facilitating the learning algorithm to capture the right solution and to generalize well even with low amount of training examples. For they process continuous spatial and time coordinates and output continuous PDE solutions, they can be categorized as neural fields.
+Most of the physical laws that govern the dynamics of system can be described by partial differential equations. For example, the Navier–Stokes equations are set of partial differential equations derived from the conservation laws (.., conservation of mass, momentum, and energy) that govern fluid mechanics. The solution of the Navier–Stokes equations with appropriate initial and boundary conditions allows the quantification of flow dynamics in precisely defined geometry. However, these equations cannot be solved exactly and therefore numerical methods must be used (such as finite differences, finite elements and finite volumes). In this setting, these governing equations must be solved while accounting for prior assumptions, linearization, and adequate time and space discretization.
+Recently, solving the governing partial differential equations of physical phenomena using deep learning has emerged as new field of scientific machine learning (SciML), leveraging the universal approximation theorem and high expressivity of neural networks. In general, deep neural networks could approximate any high-dimensional function given that sufficient training data are supplied. However, such networks do not consider the physical characteristics underlying the problem, and the level of approximation accuracy provided by them is still heavily dependent on careful specifications of the problem geometry as well as the initial and boundary conditions. Without this preliminary information, the solution is not unique and may lose physical correctness. On the other hand, physics-informed neural networks (PINNs) leverage governing physical equations in neural network training. Namely, PINNs are designed to be trained to satisfy the given training data as well as the imposed governing equations. In this fashion, neural network can be guided with training data that do not necessarily need to be large and complete. Potentially, an accurate solution of partial differential equations can be found without knowing the boundary conditions. Therefore, with some knowledge about the physical characteristics of the problem and some form of training data (even sparse and incomplete), PINN may be used for finding an optimal solution with high fidelity.
+PINNs allow for addressing wide range of problems in computational science and represent pioneering technology leading to the development of new classes of numerical solvers for PDEs. PINNs can be thought of as meshfree alternative to traditional approaches (.., CFD for fluid dynamics), and new data-driven approaches for model inversion and system identification. Notably, the trained PINN network can be used for predicting the values on simulation grids of different resolutions without the need to be retrained. In addition, being neural fields, they allow for exploiting automatic differentiation (AD) to compute the required derivatives in the partial differential equations, new class of differentiation techniques widely used to derive neural networks assessed to be superior to numerical or symbolic differentiation.
+general nonlinear partial differential equation can be:
+ut+[; ]=0, , [0,]
+denotes the solution,
+[ ; ]
+is nonlinear operator parameterized by
+
+
+is subset of
+
+. This general form of governing equations summarizes wide range of problems in mathematical physics, such as conservative laws, diffusion process, advection-diffusion systems, and kinetic equations. Given noisy measurements of generic dynamic system described by the equation above, PINNs can be designed to solve two classes of problems:
+data-driven discovery of partial differential equations.
+The data-driven solution of PDE computes the hidden state
+of the system given boundary data and/or measurements
+, and fixed model parameters
+
+. We solve:
+ut+[]=0, , [0,]
+By defining the residual
+by deep neural network. This network can be differentiated using automatic differentiation. The parameters of
+can be then learned by minimizing the following loss function
+Lu= -
+is the error between the PINN
+and the set of boundary conditions and measured data on the set of points
+
+where the boundary conditions and data are defined, and
+Lf=
+is the mean-squared error of the residual function. This second term encourages the PINN to learn the structural information expressed by the partial differential equation during the training process.
+This approach has been used to yield computationally efficient physics-informed surrogate models with applications in the forecasting of physical processes, model predictive control, multi-physics and multi-scale modeling, and simulation. It has been shown to converge to the solution of the PDE.
+Given noisy and incomplete measurements
+of the state of the system, the data-driven discovery of PDE results in computing the unknown state
+and learning model parameters
+
+that best describe the observed data and it reads as follows:
+ut+[; ]=0, , [0,]
+:=ut+[; ]=0
+by deep neural network,
+results in PINN. This network can be derived using automatic differentiation. The parameters of
+, together with the parameter
+
+of the differential operator can be then learned by minimizing the following loss function
+Lu= -
+state solutions and measurements at sparse location
+
+, respectively and
+Lf=
+residual function. This second term requires the structured information represented by the partial differential equations to be satisfied in the training process.
+This strategy allows for discovering dynamic models described by nonlinear PDEs assembling computationally efficient and fully differentiable surrogate models that may find application in predictive forecasting, control, and data assimilation.
+PINN is unable to approximate PDEs that have strong non-linearity or sharp gradients that commonly occur in practical fluid flow problems. Piece-wise approximation has been an old practice in the field of numerical approximation. With the capability of approximating strong non-linearity extremely light weight PINNs are used to solve PDEs in much larger discrete subdomains that increases accuracy substantially and decreases computational load as well. DPINN (Distributed physics-informed neural networks) and DPIELM (Distributed physics-informed extreme learning machines) are generalizable space-time domain discretization for better approximation. DPIELM is an extremely fast and lightweight approximator with competitive accuracy. Domain scaling on the top has special effect. Another school of thought is discretization for parallel computation to leverage usage of available computational resources.
+XPINNs is generalized space-time domain decomposition approach for the physics-informed neural networks (PINNs) to solve nonlinear partial differential equations on arbitrary complex-geometry domains. The XPINNs further pushes the boundaries of both PINNs as well as Conservative PINNs (cPINNs), which is spatial domain decomposition approach in the PINN framework tailored to conservation laws. Compared to PINN, the XPINN method has large representation and parallelization capacity due to the inherent property of deployment of multiple neural networks in the smaller subdomains. Unlike cPINN, XPINN can be extended to any type of PDEs. Moreover, the domain can be decomposed in any arbitrary way (in space and time), which is not possible in cPINN. Thus, XPINN offers both space and time parallelization, thereby reducing the training cost more effectively. The XPINN is particularly effective for the large-scale problems (involving large data set) as well as for the high-dimensional problems where single network based PINN is not adequate. The rigorous bounds on the errors resulting from the approximation of the nonlinear PDEs (incompressible Navier–Stokes equations) with PINNs and XPINNs are proved. However, DPINN debunks the use of residual (flux) matching at the domain interfaces as they hardly seem to improve the optimization.
+In the PINN framework, initial and boundary conditions are not analytically satisfied, thus they need to be included in the loss function of the network to be simultaneously learned with the differential equation (DE) unknown functions. Having competing objectives during the network' training can lead to unbalanced gradients while using gradient-based techniques, which causes PINNs to often struggle to accurately learn the underlying DE solution. This drawback is overcome by using functional interpolation techniques such as the Theory of functional connections (TFC)' constrained expression, in the Deep-TFC framework, which reduces the solution search space of constrained problems to the subspace of neural network that analytically satisfies the constraints. further improvement of PINN and functional interpolation approach is given by the Extreme Theory of Functional Connections (-TFC) framework, where single-layer Neural Network and the extreme learning machine training algorithm are employed. -TFC allows to improve the accuracy and performance of regular PINNs, and its robustness and reliability are proved for stiff problems, optimal control, aerospace, and rarefied gas dynamics applications.
+Regular PINNs are only able to obtain the solution of forward or inverse problem on single geometry. It means that for any new geometry (computational domain), one must retrain PINN. This limitation of regular PINNs imposes high computational costs, specifically for comprehensive investigation of geometric parameters in industrial designs. Physics-informed PointNet (PIPN) is fundamentally the result of combination of PINN' loss function with PointNet. In fact, instead of using simple fully connected neural network, PIPN uses PointNet as the core of its neural network. PointNet has been primarily designed for deep learning of 3D object classification and segmentation by the research group of Leonidas . Guibas. PointNet extracts geometric features of input computational domains in PIPN. Thus, PIPN is able to solve governing equations on multiple computational domains (rather than only single domain) with irregular geometries, simultaneously. The effectiveness of PIPN has been shown for incompressible flow, heat transfer and linear elasticity.
+Physics-informed neural networks (PINNs) have proven particularly effective in solving inverse problems within differential equations, demonstrating their applicability across science, engineering, and economics. They have shown to be useful for solving inverse problems in variety of fields, including nano-optics, topology optimization/characterization, multiphase flow in porous media, and high-speed fluid flow. PINNs have demonstrated flexibility when dealing with noisy and uncertain observation datasets. They also demonstrated clear advantages in the inverse calculation of parameters for multi-fidelity datasets, meaning datasets with different quality, quantity, and types of observations. Uncertainties in calculations can be evaluated using ensemble-based or Bayesian-based calculations.
+PINNs can also be used in connection with symbolic regression for discovering the mathematical expression in connection with discovery of parameters and functions. One example of such application is the study on chemical ageing of cellulose insulation material, in this example PINNs are used to first discover parameter for set of ordinary differential equations (ODEs) and later function solution, which is later used to find more fitting expression using symbolic regression with combination of operators.
+Ensemble of physics-informed neural networks is applied for solving plane elasticity problems. Surrogate networks are intended for the unknown functions, namely, the components of the strain and the stress tensors as well as the unknown displacement field, respectively. The residual network provides the residuals of the partial differential equations (PDEs) and of the boundary conditions. The computational approach is based on principles of artificial intelligence. This approach can be extended to nonlinear elasticity problems, where the constitutive equations are nonlinear. PINNs can also be used for Kirchhoff plate bending problems with transverse distributed loads and to contact models with elastic Winkler’ foundations.
+Deep backward stochastic differential equation method is numerical method that combines deep learning with Backward stochastic differential equation (BSDE) to solve high-dimensional problems in financial mathematics. By leveraging the powerful function approximation capabilities of deep neural networks, deep BSDE addresses the computational challenges faced by traditional numerical methods like finite difference methods or Monte Carlo simulations, which struggle with the curse of dimensionality. Deep BSDE methods use neural networks to approximate solutions of high-dimensional partial differential equations (PDEs), effectively reducing the computational burden. Additionally, integrating Physics-informed neural networks (PINNs) into the deep BSDE framework enhances its capability by embedding the underlying physical laws into the neural network architecture, ensuring solutions adhere to governing stochastic differential equations, resulting in more accurate and reliable solutions.
+An extension or adaptation of PINNs are Biologically-informed neural networks (BINNs). BINNs introduce two key adaptations to the typical PINN framework: () the mechanistic terms of the governing PDE are replaced by neural networks, and (ii) the loss function
+is modified to include
+, term used to incorporate domain-specific knowledge that helps enforce biological applicability. For (), this adaptation has the advantage of relaxing the need to specify the governing differential equation priori, either explicitly or by using library of candidate terms. Additionally, this approach circumvents the potential issue of misspecifying regularization terms in stricter theory-informed cases.
+natural example of BINNs can be found in cell dynamics, where the cell density
+is governed by reaction-diffusion equation with diffusion and growth functions
+ut= (() )+(), , [0,]
+In this case, component of
+||||
+, which penalizes values of
+that fall outside biologically relevant diffusion range defined by
+Dmin Dmax
+. Furthermore, the BINN architecture, when utilizing multilayer-perceptrons (MLPs), would function as follows: an MLP is used to construct
+from model inputs
+, serving as surrogate model for the cell density
+. This surrogate is then fed into the two additional MLPs,
+, which model the diffusion and growth functions. Automatic differentiation can then be applied to compute the necessary derivatives of
+to form the governing reaction-diffusion equation.
+Note that since
+is surrogate for the cell density, it may contain errors, particularly in regions where the PDE is not fully satisfied. Therefore, the reaction-diffusion equation may be solved numerically, for instance using method-of-lines approach.
+Translation and discontinuous behavior are hard to approximate using PINNs. They fail when solving differential equations with slight advective dominance and hence asymptotic behaviour causes the method to fail. Such PDEs could be solved by scaling variables.
+This difficulty in training of PINNs in advection-dominated PDEs can be explained by the Kolmogorov –width of the solution.
+They also fail to solve system of dynamical systems and hence have not been success in solving chaotic equations. One of the reasons behind the failure of regular PINNs is soft-constraining of Dirichlet and Neumann boundary conditions which pose multi-objective optimization problem which requires manually weighing the loss terms to be able to optimize.
+More generally, posing the solution of PDE as an optimization problem brings with it all the problems that are faced in the world of optimization, the major one being getting stuck in local optima. Specifically, it was shown that some of these local optima are connected to unstable solutions of given PDE.
+PINN – repository to implement physics-informed neural network in Python
+XPINN – repository to implement extended physics-informed neural network (XPINN) in Python
+PIPN [2]– repository to implement physics-informed PointNet (PIPN) in Python
