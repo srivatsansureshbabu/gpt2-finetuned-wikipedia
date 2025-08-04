@@ -1,6 +1,8 @@
 import wikipedia
 import pandas as pd
 import re
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="wikipedia")
 
 # gets a random page from wikipedia
 def getRandomPage():
@@ -113,6 +115,7 @@ def convertPageintoDataFrame(page):
     df = pd.DataFrame(lines, columns=["text"])
     return df
 
+
 # removes lines that have no data
 def removeEmptyData(df):
     df = df[df['text'].str.strip() != '']
@@ -135,11 +138,27 @@ def removeExtraWhiteSpaces(df):
     df["text"] = df["text"].str.strip().replace(r"\s+", " ", regex=True)
     return df
 
+def removeLatexExpressions(df):
+    def cleanText(text):
+        if not isinstance(text, str):
+            return text
+        text = re.sub(r"\$\$.*?\$\$", "", text, flags=re.DOTALL)
+        text = re.sub(r"\$.*?\$", "", text, flags=re.DOTALL)
+        text = re.sub(r"\\\(.*?\\\)", "", text, flags=re.DOTALL)
+        text = re.sub(r"\\\[.*?\\\]", "", text, flags=re.DOTALL)
+        text = re.sub(r"\{.*?\}", "", text, flags=re.DOTALL)
+        # Remove any leftover { or } characters
+        text = text.replace("{", "").replace("}", "")
+        return text
+
+    df["text"] = df["text"].apply(cleanText)
+    return df
 # does all operations
 def cleanDataFrame(df):
     df = removeEmptyData(df)
     df = removeHeaders(df)
     df = removeExtraWhiteSpaces(df)
+    df = removeLatexExpressions(df)
     return df
 
 def returnCleanedTextOfOneArticle(keyword):
