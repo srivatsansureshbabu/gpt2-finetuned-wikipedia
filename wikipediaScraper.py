@@ -46,6 +46,39 @@ def getSpecificPage(item):
 
     print("No suitable page found.")
     return None
+
+# gets a specific page of certain topic. i.e. getSpecificPage("phone")
+def getAllPages(item):
+    results = wikipedia.search(item)
+
+    # Match only titles with the whole word 'skate'
+    pattern = re.compile(rf'\b{re.escape(item)}\b', re.IGNORECASE)
+    filtered_results = [title for title in results if pattern.search(title)]
+    pages = []
+    print("Filtered results:", filtered_results)
+
+    while filtered_results:
+        title = filtered_results.pop(0)
+        try:
+            page = wikipedia.page(title, auto_suggest=False)  # Turn off auto-suggest
+            # Ensure returned page title contains "skate" (whole word)
+            if pattern.search(page.title):
+                print(f"Found valid page: {page.title}")
+                pages.append(page)
+            else:
+                print(f"Rejected page: {page.title}")
+        except wikipedia.exceptions.DisambiguationError as e:
+            print(f"DisambiguationError: '{title}' ambiguous, options: {e.options[:3]}")
+        except wikipedia.exceptions.PageError:
+            print(f"PageError: '{title}' not found, trying next.")
+        except Exception as e:
+            print(f"Unexpected error for '{title}': {e}")
+
+    if len(pages) > 0:
+        print(f"Found {len(pages)} articles.")
+    else:
+        print("No suitable page found.")
+    return pages
 # gets skateboarding wikipedia page
 def getSkateboardingPage():
     results = wikipedia.search("skate")
@@ -109,12 +142,24 @@ def cleanDataFrame(df):
     df = removeExtraWhiteSpaces(df)
     return df
 
-def returnCleanedSkateText():
-    keyword = "skate"
+def returnCleanedTextOfOneArticle(keyword):
+    # keyword = "skate"
     randomPage = getSpecificPage(keyword)
     randomPageDataFrame = convertPageintoDataFrame(randomPage)
     randomPageDataFrame = cleanDataFrame(randomPageDataFrame)
     page = convertDataFrametoPage(randomPageDataFrame)
+    return page
+
+def returnCleanedTextOfAllArticles(keyword):
+    randomPages = getAllPages(keyword)
+    cleanedArticles = []
+    for randomPage in randomPages:
+        # print("randomPage > ", randomPage)
+        randomPageDataFrame = convertPageintoDataFrame(randomPage)
+        randomPageDataFrame = cleanDataFrame(randomPageDataFrame)
+        page = convertDataFrametoPage(randomPageDataFrame)
+        cleanedArticles.append(page)
+    return cleanedArticles
 
 def convertDataFrametoPage(df):
     text = "\n".join(df["text"].tolist())  # join with newlines

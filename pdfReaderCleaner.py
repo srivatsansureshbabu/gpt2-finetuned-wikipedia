@@ -64,3 +64,6 @@ def getGPT2Embeddings(token_ids_batch: torch.Tensor) -> torch.Tensor:
         outputs = model(token_ids_batch)
         embeddings = outputs.last_hidden_state
     return embeddings
+
+def chunkEmbeddings(researchPaperEmbeddings): 
+    return researchPaperEmbeddings.mean(dim=1)  # (batch_size, 768)
