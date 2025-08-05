@@ -38,10 +38,10 @@ python run.py
    Ensure you have the cleaned `.txt` data file ready for fine-tuning.
 
 2. **Download the Notebook**  
-   Download `fineTuningGPT.ipynb` from the repository. This notebook handles the fine-tuning and text generation.
+   Download `generateQuestions.ipynb` from the repository. This notebook handles the question generation that we feed into our model.
 
 3. **Open in Google Colab**  
-   Upload `cleanedMachineLearningText.txt` and `fineTuningGPT.ipynb` to Google Drive and open `fineTuningGPT.ipynb` in [Google Colab](https://colab.research.google.com/).  
+   Upload `cleanedMachineLearningText.txt` and `generateQuestions.ipynb` to Google Drive and open `generateQuestions.ipynb` in [Google Colab](https://colab.research.google.com/).  
    - Recommended for free GPU access to speed up fine-tuning.  
    - Enable GPU by going to:  
      `Runtime` > `Change runtime type` > select `GPU` > Save.
