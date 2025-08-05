@@ -46,8 +46,4 @@ python run.py
    - Enable GPU by going to:  
      `Runtime` > `Change runtime type` > select `GPU` > Save.
 
-4. **Install Required Libraries**  
-   In the notebook, install dependencies (if not already installed) by running:  
-   ```python
-   !pip install -r requirements.txt
 
