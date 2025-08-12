@@ -9,9 +9,9 @@ Work-in-progress NLP pipeline for fine-tuning GPT-2 on selectively scraped Wikip
 ## File Information
 - **run.py** — Main script  
 - **researchPaperReader.py** — reads research papers  
-- **fineTuningGPT.ipynb** — Notebook for model generation (recommended to run in Google Colab with GPU)  
 
 ## Data
+- **AttentionIsAllYouNeed.json** - JSON file for research paper
 - **metrics.txt** — Tracking speedups and efficiency  
 
 ## How to Run
