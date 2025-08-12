@@ -1,6 +1,6 @@
 from unusedCurrently.wikipediaScraper import *
 # from datasets import load_dataset
-from researchPaperReader import *
+from unusedCurrently.researchPaperReader import *
 # nltk.download()  # Download once; you can comment this out after first run
 
 def main():
@@ -16,9 +16,9 @@ def main():
     links = arxivReferencesToLinks(researchPaper)
     researchPaper = removeReferences(researchPaper)
     researchPaper = removeFormulas(researchPaper)
+    researchPaper = removePaddings(researchPaper)
     with open(f"{outputName}.txt", "w") as f:
         f.write(researchPaper)
-    print(researchPaper)
     print(links)
 if __name__ == "__main__":
     main()
