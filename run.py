@@ -1,6 +1,6 @@
-from unusedCurrently.wikipediaScraper import *
+# from unusedCurrently.wikipediaScraper import *
 # from datasets import load_dataset
-from unusedCurrently.researchPaperReader import *
+from researchPaperReader import *
 # nltk.download()  # Download once; you can comment this out after first run
 
 def main():
