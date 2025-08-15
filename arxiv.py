@@ -2,6 +2,11 @@ import pinecone
 import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 import os
+import gdown
+import sqlite3
+from io import BytesIO
+import tempfile
+import requests
 def intializeEmbeddings():
     pc = Pinecone(api_key=os.getenv("PINECONE_API"), environment="us-east-1")  # match the dashboard region
 
@@ -60,3 +65,33 @@ def doiToArxiv(doi):
     except Exception as e:
         print(f"Error converting DOI: {e}")
         return None
+
+def loadDBFromGDrive(file_id):
+    """
+    Loads the arxiv_papers.db from Google Drive into an in-memory SQLite database.
+    Returns:
+        sqlite3.Connection: Connection to the in-memory SQLite DB
+    """
+    # Hardcoded file ID
+    # file_id = "150bo01vc0Xx49nsPhqtjGM4-XsUNL1EG"
+    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+
+    # Download the file
+    r = requests.get(url)
+    r.raise_for_status()
+
+    # Write to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        tmp_file.write(r.content)
+        tmp_name = tmp_file.name
+    
+    # Load into in-memory SQLite DB
+    conn = sqlite3.connect(':memory:', check_same_thread=False)
+    disk_conn = sqlite3.connect(tmp_name)
+    disk_conn.backup(conn)
+    disk_conn.close()
+
+    # Delete the temporary file
+    os.remove(tmp_name)
+
+    return conn

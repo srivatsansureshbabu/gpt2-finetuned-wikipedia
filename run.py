@@ -13,6 +13,7 @@ def main():
     load_dotenv()
     index = intializeEmbeddings()
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
     conn = sqlite3.connect(
         "/Users/srivatsansureshbabu/Desktop/FineTuningGPT/arxiv_papers.db",
         check_same_thread=False
