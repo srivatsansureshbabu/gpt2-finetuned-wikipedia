@@ -1,5 +1,8 @@
 # ScholarAI
 
+<div align="center">
+  <img src="imagesForReadMe/GUI.png" alt="GUI" width="1000"/>
+</div>
 This project allows you to semantically search through a large collection of research papers (mainly ML/AI) and retrieve relevant abstracts using embeddings and Pinecone. The interface is powered by Gradio for an interactive chatbot-like experience.
 
 ## Features
