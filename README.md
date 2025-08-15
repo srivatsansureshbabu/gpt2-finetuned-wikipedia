@@ -1,31 +1,24 @@
-# gpt2-research-assistant
+# ScholarAI
 
-Work-in-progress NLP pipeline for fine-tuning GPT-2 on selectively scraped Wikipedia content.
+This project allows you to semantically search through a large collection of research papers (mainly ML/AI) and retrieve relevant abstracts using embeddings and Pinecone. The interface is powered by Gradio for an interactive chatbot-like experience.
 
-## Current Milestones
-- Currently read and cleaned research papers
-- Extracted reference links  
+## Features
 
-## File Information
-- **run.py** — Main script  
-- **researchPaperReader.py** — reads research papers  
+- Query your database of research papers using natural language.
+- Retrieve top relevant papers based on semantic similarity.
+- Minimal setup and easy to run locally.
+- Uses `SentenceTransformer` embeddings and Pinecone for vector search.
 
-## Data
-- **AttentionIsAllYouNeed.json** - JSON file for research paper
-- **metrics.txt** — Tracking speedups and efficiency  
+# How to run
+```bash
+# run the main program
+python run.py 
 
-## How to Run
+```
+### Copy the link IP link from the terminal
 
 ```bash
-# Download all independencies
-pip install -r requirements.txt
+#(base) srivatsansureshbabu@S345003 FineTuningGPT % python run.py
+#* Running on local URL:  http://99.0.0.4:2222 <- this link
+#* To create a public link, set `share=True` in `launch()`.
 ```
-
-```bash
-# Example Call:
-# python run.py [link to research paper] [outputName]
-# Example call: 
-python run.py "https://arxiv.org/pdf/1706.03762" "AttentionIsAllYouNeed"
-```
-
-

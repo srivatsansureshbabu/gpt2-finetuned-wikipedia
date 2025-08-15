@@ -1,1 +1,5 @@
 unusedCurrently/
+api_keys.txt
+.env
+.arxiv.py
+arxiv_papers.db
