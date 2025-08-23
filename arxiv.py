@@ -14,7 +14,41 @@ def intializeEmbeddings():
     index = pc.Index(index_name)  # index must already exist in this region
     return index
 
-def searchPapers(model, index, cursor, query_text, top_k=5):
+# def searchPapers(model, index, cursor, query_text, top_k=5):
+#     # 1. Generate embedding
+#     query_embedding = model.encode([query_text])[0]
+
+#     # 2. Normalize for cosine similarity (optional)
+#     query_embedding = query_embedding / np.linalg.norm(query_embedding)
+
+#     # 3. Convert to plain Python floats
+#     query_embedding = [float(x) for x in query_embedding]
+
+#     # 4. Query Pinecone
+#     result = index.query(vector=[query_embedding], top_k=top_k)
+
+#     papers = []
+#     for match in result['matches']:
+#         # Extract numeric part of Pinecone ID
+#         row_offset = int(match['id'].replace("paper", ""))
+
+#         # Fetch paper metadata from SQLite
+#         cursor.execute("SELECT title, abstract FROM papers LIMIT 1 OFFSET ?", (row_offset,))
+#         row = cursor.fetchone()
+#         if row:
+#             title, abstract = row
+#         else:
+#             title, abstract = "Unknown", ""
+
+#         papers.append({
+#             "id": match['id'],
+#             "score": match['score'],
+#             "title": title,
+#             "abstract": abstract,
+#         })
+
+#     return papers
+def searchPapers(model, index, query_text, top_k=5):
     # 1. Generate embedding
     query_embedding = model.encode([query_text])[0]
 
@@ -25,30 +59,20 @@ def searchPapers(model, index, cursor, query_text, top_k=5):
     query_embedding = [float(x) for x in query_embedding]
 
     # 4. Query Pinecone
-    result = index.query(vector=[query_embedding], top_k=top_k)
+    result = index.query(vector=[query_embedding], top_k=top_k, include_metadata=True)
 
     papers = []
     for match in result['matches']:
-        # Extract numeric part of Pinecone ID
-        row_offset = int(match['id'].replace("paper", ""))
-
-        # Fetch paper metadata from SQLite
-        cursor.execute("SELECT title, abstract FROM papers LIMIT 1 OFFSET ?", (row_offset,))
-        row = cursor.fetchone()
-        if row:
-            title, abstract = row
-        else:
-            title, abstract = "Unknown", ""
-
+        metadata = match.get('metadata', {})
         papers.append({
-            "id": match['id'],
+            "paper_id": match['id'],
             "score": match['score'],
-            "title": title,
-            "abstract": abstract
+            "title": metadata.get('title', "Unknown"),
+            "abstract": metadata.get('abstract', ""),
+            "arxiv_url": metadata.get('arxiv_url', f"https://arxiv.org/abs/{match['id']}"),
         })
 
     return papers
-
 
 def doiToArxiv(doi):
     """
@@ -84,7 +108,7 @@ def loadDBFromGDrive(file_id):
     with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
         tmp_file.write(r.content)
         tmp_name = tmp_file.name
-    
+
     # Load into in-memory SQLite DB
     conn = sqlite3.connect(':memory:', check_same_thread=False)
     disk_conn = sqlite3.connect(tmp_name)

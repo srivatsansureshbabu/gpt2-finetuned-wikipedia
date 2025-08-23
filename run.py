@@ -15,21 +15,30 @@ def main():
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
     conn = sqlite3.connect(
-        "/Users/srivatsansureshbabu/Desktop/FineTuningGPT/arxiv_papers.db",
+        "/Users/srivatsansureshbabu/Desktop/ScholarAI/arxiv_papers.db",
         check_same_thread=False
     )  
     cursor = conn.cursor()
 
+    # def query_papers(query_text, top_k=5):
+    #     results = searchPapers(model, index, cursor, query_text, top_k=top_k)
+    #     output = ""
+    #     for i, paper in enumerate(results, 1):
+    #         doi_link = f"https://doi.org/{paper['doi']}" if 'doi' in paper else "No DOI"
+    #         output += f"{i}. {paper['title']} (score: {paper['score']:.3f})\n"
+    #         output += f"Abstract: {paper['abstract'][:300]}...\n"
+    #         output += f"Link: {doi_link}\n\n"
+    #     return output
     def query_papers(query_text, top_k=5):
-        results = searchPapers(model, index, cursor, query_text, top_k=top_k)
+        results = searchPapers(model, index, query_text, top_k=top_k)
         output = ""
         for i, paper in enumerate(results, 1):
-            doi_link = f"https://doi.org/{paper['doi']}" if 'doi' in paper else "No DOI"
+            arxiv_link = paper.get('arxiv_url', f"https://arxiv.org/abs/{paper['paper_id']}" if 'id' in paper else "No arXiv ID")
             output += f"{i}. {paper['title']} (score: {paper['score']:.3f})\n"
             output += f"Abstract: {paper['abstract'][:300]}...\n"
-            output += f"Link: {doi_link}\n\n"
+            output += f"Link: {arxiv_link}\n\n"
         return output
-
+    
     iface = gr.Interface(
         fn=query_papers, 
         inputs=[gr.Textbox(label="Enter your query"), gr.Slider(1, 10, step=1, label="Amount of research papers to return")],
