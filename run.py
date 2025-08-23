@@ -43,7 +43,7 @@ def main():
         fn=query_papers, 
         inputs=[gr.Textbox(label="Enter your query"), gr.Slider(1, 10, step=1, label="Amount of research papers to return")],
         outputs="textbox",
-        title="Arxiv Paper Search Chatbot",
+        title="ScholAI",
         description="Search over 450K ML & AI research papers and find the most relevant results instantly."
     )
 
