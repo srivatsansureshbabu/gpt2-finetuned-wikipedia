@@ -1,4 +1,4 @@
-# ScholarAI
+# ScholAI
 
 <div align="center">
   <img src="imagesForReadMe/GUI.png" alt="GUI" width="1000"/>
